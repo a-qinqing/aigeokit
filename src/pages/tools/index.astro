@@ -1,0 +1,96 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import ToolGrid from '../../components/ToolGrid.astro';
+import Footer from '../../components/Footer.astro';
+
+const PAGE_URL = 'https://www.aigeokit.com/tools/';
+const title = 'Free GEO & AI SEO Tools Suite | AIGEOKit';
+const description =
+  'Browse our complete suite of free, privacy-first GEO tools. Generate JSON-LD schema, check AI crawlers, and optimize your site for SearchGPT & Perplexity.';
+
+// Structured Data — ItemList of the tools directory
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'AIGEOKit Tools Suite',
+  description,
+  url: PAGE_URL,
+  numberOfItems: 4,
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'JSON-LD Schema Generator & GEO Checklist',
+      url: 'https://www.aigeokit.com/tools/schema-generator/',
+    },
+    { '@type': 'ListItem', position: 2, name: 'AI Robots.txt & Crawler Checker' },
+    { '@type': 'ListItem', position: 3, name: 'llm.txt File Builder' },
+    { '@type': 'ListItem', position: 4, name: 'GEO Citation Analyzer' },
+  ],
+};
+
+const faqs = [
+  {
+    q: 'Are AIGEOKit tools really free?',
+    a: 'Yes — every tool is 100% free, with no paywall, no login and no credit card. All code runs entirely in your browser, so there are no server costs to pass on to you.',
+  },
+  {
+    q: 'Does my content or data leave my device?',
+    a: 'No. Every generator runs 100% client-side: your URLs, schema and checklist scores are computed locally and are never uploaded, stored or tracked anywhere.',
+  },
+  {
+    q: 'What does the GEO Readiness Checklist measure?',
+    a: 'It scores how likely SearchGPT, Perplexity and other AI answer engines are to find, trust and cite your page — checking entity signals such as sameAs profiles, publisher and author attribution, and citations, with an actionable fix for every item.',
+  },
+];
+---
+
+<Layout title={title} description={description} canonical={PAGE_URL} jsonLd={jsonLd}>
+  <Header />
+
+  <!-- Directory hero -->
+  <section class="relative overflow-hidden">
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+      <div class="absolute -top-32 left-1/2 h-[400px] w-[760px] -translate-x-1/2 rounded-full bg-mint-500/10 blur-[110px]"></div>
+    </div>
+    <div class="relative mx-auto max-w-7xl px-4 pb-8 pt-16 text-center sm:px-6 sm:pt-20 lg:px-8">
+      <p class="mx-auto inline-flex items-center gap-2 rounded-full border border-ink-600 bg-ink-850 px-4 py-1.5 text-xs font-medium text-sand-400">
+        <span class="text-mint-400">✦</span>
+        AIGEOKit — the free GEO toolkit for SearchGPT, Perplexity &amp; AI Overviews
+      </p>
+      <h1 class="mx-auto mt-6 max-w-3xl text-balance text-4xl font-extrabold leading-[1.08] tracking-tight text-sand-100 sm:text-5xl">
+        Free AI &amp; GEO Webmaster Tools Suite
+      </h1>
+      <p class="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-sand-400 sm:text-lg">
+        Privacy-first tools that help AI answer engines find, verify and cite your pages.
+        Everything runs in your browser — the live generator ships today, more tools are on the way.
+      </p>
+    </div>
+  </section>
+
+  <main>
+    <!-- Tools Directory: 1 live + 3 coming soon -->
+    <ToolGrid />
+
+    <!-- FAQ -->
+    <section id="faq" class="mx-auto max-w-4xl scroll-mt-20 px-4 pb-24 sm:px-6 lg:px-8">
+      <div class="mx-auto mb-10 max-w-2xl text-center">
+        <p class="text-xs font-semibold uppercase tracking-widest text-mint-400">FAQ</p>
+        <h2 class="mt-2 text-3xl font-bold tracking-tight text-sand-100 sm:text-4xl">
+          Frequently Asked Questions
+        </h2>
+      </div>
+      <div class="space-y-4">
+        {faqs.map((f) => (
+          <article class="rounded-2xl border border-ink-700 bg-ink-850 p-6">
+            <h3 class="text-[15px] font-bold text-sand-100">{f.q}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-sand-400">{f.a}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>

@@ -1,0 +1,34 @@
+# build output
+dist/
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/
+
+# requirement / spec docs (keep local, out of the public repo)
+/指令.txt
+/指令1.txt
+/指令2.txt
+/指令3.txt
+/指令4.txt
+/指令-1.txt
+/首页.txt
+/semrush-合作代码.txt

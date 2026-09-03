@@ -1,0 +1,35 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+// Custom 404 — noindex and no canonical (never compete with real pages).
+const title = 'Page Not Found | AIGEOKit';
+const description = 'This page does not exist. Browse the free AIGEOKit GEO tools instead.';
+---
+
+<Layout title={title} description={description} canonical={false} robots="noindex, follow">
+  <Header />
+  <main class="mx-auto flex max-w-7xl flex-col items-center px-4 py-28 text-center sm:px-6 lg:px-8">
+    <p class="bg-gradient-to-r from-mint-400 to-cyan-400 bg-clip-text text-7xl font-extrabold tracking-tight text-transparent">
+      404
+    </p>
+    <h1 class="mt-5 text-2xl font-bold text-sand-100 sm:text-3xl">This page moved or never existed</h1>
+    <p class="mt-3 max-w-md text-sm leading-relaxed text-sand-400">
+      The page you are looking for is not here — but the GEO tools are. Generate JSON-LD schema
+      and test your GEO Readiness score in seconds, free.
+    </p>
+    <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+      <a href="/tools/schema-generator/" class="rounded-xl bg-mint-500 px-6 py-3 text-sm font-bold text-ink-950 shadow-lg shadow-mint-500/20 transition-colors hover:bg-mint-400">
+        Open Schema Generator →
+      </a>
+      <a href="/tools/" class="rounded-xl border border-ink-600 bg-ink-850 px-6 py-3 text-sm font-semibold text-sand-200 transition-colors hover:border-mint-500/40 hover:text-sand-100">
+        View All Tools
+      </a>
+      <a href="/" class="rounded-xl border border-ink-600 bg-ink-850 px-6 py-3 text-sm font-semibold text-sand-200 transition-colors hover:border-mint-500/40 hover:text-sand-100">
+        Back to Home
+      </a>
+    </div>
+  </main>
+  <Footer />
+</Layout>

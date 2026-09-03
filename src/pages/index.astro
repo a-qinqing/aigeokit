@@ -1,0 +1,102 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import SEOGuide from '../components/SEOGuide.astro';
+import Footer from '../components/Footer.astro';
+
+const SITE_URL = 'https://www.aigeokit.com/';
+const title = 'Free AI & GEO Tools | Optimize Your Site for SearchGPT & Perplexity';
+const description =
+  '100% free AI & GEO toolkit for webmasters. Generate JSON-LD schema, boost citations, and get recommended by SearchGPT, Perplexity & AI Overviews.';
+
+// Structured Data (JSON-LD for GEO/SEO)
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'AIGEOKit',
+    url: SITE_URL,
+    description,
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'All',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'AIGEOKit',
+      url: SITE_URL,
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'AIGEOKit',
+    url: SITE_URL,
+    logo: {
+      '@type': 'ImageObject',
+      url: 'https://www.aigeokit.com/og-image.png',
+    },
+    description,
+  },
+];
+---
+
+<Layout title={title} description={description} canonical={SITE_URL} jsonLd={jsonLd}>
+  <Header />
+  <Hero />
+
+  <main>
+    <!-- Featured tool — the live generator; everything else lives in /tools/ -->
+    <section id="featured" class="relative mx-auto max-w-7xl scroll-mt-20 px-4 py-16 sm:px-6 lg:px-8">
+      <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+        <div class="absolute -top-24 right-0 h-[280px] w-[560px] rounded-full bg-mint-500/[0.07] blur-[100px]"></div>
+      </div>
+
+      <div class="relative flex flex-col gap-8 overflow-hidden rounded-3xl border border-ink-700 bg-ink-850 p-8 sm:p-10 lg:flex-row lg:items-center lg:justify-between">
+        <div class="max-w-xl">
+          <p class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-mint-400">
+            <span class="relative flex h-2 w-2">
+              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-mint-400 opacity-60"></span>
+              <span class="relative inline-flex h-2 w-2 rounded-full bg-mint-400"></span>
+            </span>
+            Featured tool · Live now
+          </p>
+          <h2 class="mt-3 text-2xl font-bold tracking-tight text-sand-100 sm:text-3xl">
+            JSON-LD Schema Generator &amp; GEO Checklist
+          </h2>
+          <p class="mt-3 text-sm leading-relaxed text-sand-400">
+            Generate production-ready JSON-LD for Articles, FAQ, Products &amp; Organization with a
+            live GEO Readiness score — free, 100% in your browser, no login required.
+          </p>
+          <ul class="mt-4 flex flex-wrap gap-2">
+            <li class="rounded-full border border-ink-600 bg-ink-900 px-3 py-1 text-[11px] font-medium text-sand-300">Article / BlogPosting / NewsArticle</li>
+            <li class="rounded-full border border-ink-600 bg-ink-900 px-3 py-1 text-[11px] font-medium text-sand-300">Raw JSON-LD · WordPress · Shopify</li>
+            <li class="rounded-full border border-ink-600 bg-ink-900 px-3 py-1 text-[11px] font-medium text-sand-300">8 schema types</li>
+          </ul>
+        </div>
+        <div class="flex shrink-0 flex-col gap-3 sm:flex-row lg:flex-col">
+          <a
+            href="/tools/schema-generator/"
+            class="rounded-xl bg-mint-500 px-7 py-3.5 text-center text-sm font-bold text-ink-950 shadow-lg shadow-mint-500/20 transition-all hover:bg-mint-400"
+          >
+            Open Tool →
+          </a>
+          <a
+            href="/tools/"
+            class="rounded-xl border border-ink-600 bg-ink-900 px-7 py-3.5 text-center text-sm font-bold text-sand-100 transition-colors hover:border-mint-500/40 hover:text-mint-300"
+          >
+            View All Tools →
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <SEOGuide />
+  </main>
+
+  <Footer />
+</Layout>

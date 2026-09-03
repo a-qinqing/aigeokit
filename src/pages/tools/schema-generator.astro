@@ -1,0 +1,138 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import SchemaPicker from '../../components/SchemaPicker.astro';
+import SchemaBuilder from '../../components/SchemaBuilder.astro';
+import Footer from '../../components/Footer.astro';
+import CopyModal from '../../components/CopyModal.astro';
+
+const PAGE_URL = 'https://www.aigeokit.com/tools/schema-generator/';
+const title = 'Free Article JSON-LD Schema Generator & GEO Checklist | AIGEOKit';
+const description =
+  'Generate production-ready JSON-LD schema for Articles and Blogs. Test your GEO Readiness score for SearchGPT & Perplexity in real time.';
+
+// Structured Data (JSON-LD for GEO/SEO)
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'AIGEOKit — JSON-LD Schema Generator & GEO Checklist',
+    url: PAGE_URL,
+    description,
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'All',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'AIGEOKit',
+      url: 'https://www.aigeokit.com/',
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://www.aigeokit.com/',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Tools',
+        item: 'https://www.aigeokit.com/tools/',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: 'Schema Generator',
+        item: PAGE_URL,
+      },
+    ],
+  },
+];
+
+const chips = [
+  { icon: '✅', text: 'Free forever · no account needed' },
+  { icon: '🧩', text: 'Article first — FAQ, Product, Organization & 5 more' },
+  { icon: '📋', text: 'Output: Raw JSON-LD · WordPress · Shopify' },
+  { icon: '🔒', text: 'Nothing leaves your browser' },
+];
+---
+
+<Layout title={title} description={description} canonical={PAGE_URL} jsonLd={jsonLd}>
+  <Header />
+
+  <!-- Tool landing strip -->
+  <section class="relative overflow-hidden">
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+      <div class="absolute -top-24 left-1/2 h-[320px] w-[720px] -translate-x-1/2 rounded-full bg-mint-500/10 blur-[110px]"></div>
+    </div>
+    <div class="relative mx-auto max-w-7xl px-4 pb-6 pt-10 sm:px-6 lg:px-8">
+      <!-- Breadcrumb: Home → Tools → Schema Generator -->
+      <nav aria-label="Breadcrumb" class="text-xs text-sand-500">
+        <ol class="flex flex-wrap items-center gap-1.5">
+          <li><a href="/" class="font-medium transition-colors hover:text-mint-300">Home</a></li>
+          <li aria-hidden="true" class="text-sand-600">/</li>
+          <li><a href="/tools/" class="font-medium transition-colors hover:text-mint-300">Tools</a></li>
+          <li aria-hidden="true" class="text-sand-600">/</li>
+          <li aria-current="page" class="font-semibold text-sand-300">Schema Generator</li>
+        </ol>
+      </nav>
+      <h1 class="mt-4 max-w-3xl text-balance text-3xl font-extrabold leading-tight tracking-tight text-sand-100 sm:text-4xl">
+        Free Article JSON-LD Schema Generator{' '}
+        <span class="text-mint-400">&amp; GEO Checklist</span>
+      </h1>
+      <p class="mt-3 max-w-2xl text-pretty text-[15px] leading-relaxed text-sand-400">
+        Generate production-ready <code class="text-mint-300">Article</code>,{' '}
+        <code class="text-mint-300">BlogPosting</code>, <code class="text-mint-300">NewsArticle</code> or{' '}
+        <code class="text-mint-300">TechnicalArticle</code> schema with author, publisher,{' '}
+        <code class="text-mint-300">sameAs</code> and citation entities — then score it with the live
+        GEO Readiness Checklist. 100% client-side, free forever.
+      </p>
+      <ul class="mt-6 flex flex-wrap gap-2">
+        {chips.map((c) => (
+          <li class="flex items-center gap-1.5 rounded-full border border-ink-700 bg-ink-850/70 px-3 py-1.5 text-[11px] font-medium text-sand-300">
+            <span aria-hidden="true">{c.icon}</span>{c.text}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <main>
+    <!-- 8-type generator matrix (Article default) -->
+    <SchemaPicker />
+    <!-- Builder: form + JSON-LD preview/copy/download + GEO checklist -->
+    <SchemaBuilder />
+  </main>
+
+  <!-- Cross-link to the long-form GEO guide on the homepage -->
+  <section class="mx-auto max-w-7xl px-4 pb-24 pt-2 sm:px-6 lg:px-8">
+    <div class="flex flex-col items-start justify-between gap-5 rounded-2xl border border-ink-700 bg-ink-850 p-6 sm:flex-row sm:items-center">
+      <div>
+        <h2 class="text-base font-bold text-sand-100">Why do AI search engines need GEO-optimized schema?</h2>
+        <p class="mt-1 text-sm leading-relaxed text-sand-500">
+          Read the full GEO guide — how answer engines choose what to cite, why FAQ markup is the
+          fastest win, and how to deploy what you just built.
+        </p>
+      </div>
+      <a href="/#guide" class="shrink-0 rounded-xl bg-mint-500 px-5 py-2.5 text-sm font-bold text-ink-950 transition-colors hover:bg-mint-400">
+        View GEO Guide →
+      </a>
+    </div>
+  </section>
+
+  <Footer />
+  <CopyModal />
+
+  <script>
+    import '../../lib/app.ts';
+  </script>
+</Layout>

@@ -1,0 +1,7 @@
+# Cloudflare Pages configuration (wrangler)
+# Deployment target: static site — no workers, no runtime, no server.
+# Docs: https://developers.cloudflare.com/pages/
+
+name = "geo-kit"
+compatibility_date = "2026-09-01"
+pages_build_output_dir = "dist"

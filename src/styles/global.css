@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+/* AIGEOKit design tokens — dark, high-contrast, performance-first */
+@theme {
+  --color-ink-950: #060908;
+  --color-ink-900: #0b0f0e;
+  --color-ink-850: #0e1311;
+  --color-ink-800: #121816;
+  --color-ink-700: #1b2320;
+  --color-ink-600: #2a352f;
+  --color-ink-500: #3d4b44;
+
+  --color-mint-300: #6ee7b7;
+  --color-mint-400: #34d399;
+  --color-mint-500: #10b981;
+
+  --color-sand-100: #ecf3ee;
+  --color-sand-300: #c6d2c9;
+  --color-sand-400: #9fafa3;
+  --color-sand-500: #7d8d84;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei",
+    sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "JetBrains Mono", Menlo,
+    Consolas, "Liberation Mono", monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  background-color: var(--color-ink-900);
+  color: var(--color-sand-100);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background-color: var(--color-mint-500);
+  color: var(--color-ink-950);
+}
+
+/* Slim dark scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-ink-600) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--color-ink-600);
+  border-radius: 8px;
+}
+
+/* Accessible focus rings */
+:focus-visible {
+  outline: 2px solid var(--color-mint-400);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Active platform tab (toggled by app.ts) */
+.platform-tab.tab-active {
+  border-bottom-color: var(--color-mint-400);
+  color: var(--color-mint-300);
+}
+
+/* Selected tool card (toggled by app.ts) */
+.tool-card.card-active {
+  border-color: var(--color-mint-500);
+  box-shadow:
+    0 0 0 1px rgb(16 185 129 / 0.55),
+    0 14px 34px -12px rgb(16 185 129 / 0.18);
+}
+.tool-card.card-active .tool-card-icon {
+  background-color: rgb(16 185 129 / 0.12);
+  color: var(--color-mint-300);
+  --tw-ring-color: rgb(52 211 153 / 0.35);
+}

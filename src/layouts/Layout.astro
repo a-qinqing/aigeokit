@@ -1,0 +1,69 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Absolute canonical URL of this page (used for canonical, og:url, twitter:url).
+   *  Pass false to omit (error pages). */
+  canonical?: string | false;
+  /** Absolute OG / Twitter share image URL. */
+  image?: string;
+  /** robots meta content. */
+  robots?: string;
+  /** Optional structured data: one object or an array, each emitted as its own
+   *  <script type="application/ld+json"> block. */
+  jsonLd?: object | object[];
+}
+
+const {
+  title = 'Free AI & GEO Tools | Optimize Your Site for SearchGPT & Perplexity',
+  description = '100% free AI & GEO toolkit for webmasters. Generate JSON-LD schema, boost citations, and get recommended by SearchGPT, Perplexity & AI Overviews.',
+  canonical = 'https://www.aigeokit.com/',
+  image = 'https://www.aigeokit.com/og-image.png',
+  robots = 'index, follow',
+  jsonLd,
+} = Astro.props;
+
+const showUrl = canonical !== false && canonical !== undefined && canonical !== '';
+---
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Primary Meta Tags -->
+    <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+    {showUrl && <link rel="canonical" href={canonical} />}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="robots" content={robots} />
+    <meta name="theme-color" content="#0b0f0e" />
+    <!-- Cloudflare Web Analytics site verification (name + value per CF docs) -->
+    <Fragment set:html='<meta name="impact-site-verification" value="e18e3eeb-8106-495e-aa28-00d453dea728" />' />
+
+    <!-- Open Graph / Social / AI Cards -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="AIGEOKit" />
+    {showUrl && <meta property="og:url" content={canonical} />}
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
+
+    <!-- Twitter / X -->
+    <meta property="twitter:card" content="summary_large_image" />
+    {showUrl && <meta property="twitter:url" content={canonical} />}
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={image} />
+
+    {(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []).map((block) => (
+      <script is:inline type="application/ld+json" set:html={JSON.stringify(block)} />
+    ))}
+  </head>
+  <body class="min-h-screen bg-ink-900 font-sans text-sand-100 antialiased">
+    <slot />
+  </body>
+</html>

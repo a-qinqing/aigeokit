@@ -1,0 +1,5 @@
+# AIGEOKit robots.txt
+User-agent: *
+Allow: /
+
+Sitemap: https://www.aigeokit.com/sitemap.xml

@@ -1,0 +1,50 @@
+---
+
+---
+
+<div id="copy-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <!-- backdrop — click to dismiss -->
+  <div id="modal-backdrop" class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+
+  <!-- panel -->
+  <div class="relative w-full max-w-md overflow-hidden rounded-2xl border border-ink-600 bg-ink-900 shadow-2xl shadow-black/60">
+    <div class="flex items-center justify-between border-b border-ink-700 px-5 py-4">
+      <div class="flex items-center gap-2.5">
+        <span class="grid h-8 w-8 place-items-center rounded-full bg-mint-500/15 text-mint-400 ring-1 ring-mint-500/30">
+          <svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0l-3.5-3.5a1 1 0 1 1 1.4-1.4l2.8 2.79 6.8-6.8a1 1 0 0 1 1.4 0z" clip-rule="evenodd"/></svg>
+        </span>
+        <h2 id="modal-title" class="text-sm font-bold text-sand-100">Code Copied to Clipboard!</h2>
+      </div>
+      <button type="button" id="modal-close" aria-label="Close" class="grid h-8 w-8 place-items-center rounded-lg text-sand-500 transition-colors hover:bg-ink-800 hover:text-sand-100">
+        <svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4"><path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22z"/></svg>
+      </button>
+    </div>
+
+    <div class="px-5 py-4">
+      <!-- current platform context (informational, non-intrusive) -->
+      <p class="text-xs font-semibold uppercase tracking-widest text-sand-500">
+        Platform: <span id="modal-platform" class="text-mint-300">Raw JSON-LD</span>
+      </p>
+
+      <!-- recommendation card -->
+      <div id="modal-recs" class="mt-3"></div>
+    </div>
+
+    <div class="flex flex-wrap items-center justify-between gap-3 border-t border-ink-700 bg-ink-850 px-5 py-3.5">
+      <div class="flex flex-wrap items-center gap-1.5">
+        <span class="text-[11px] text-sand-500">Copy as:</span>
+        <button type="button" data-quick-copy="raw" class="rounded-md border border-ink-600 px-2.5 py-1.5 text-[11px] font-semibold text-sand-400 transition-colors hover:border-mint-500/40 hover:text-sand-100">Raw</button>
+        <button type="button" data-quick-copy="wordpress" class="rounded-md border border-ink-600 px-2.5 py-1.5 text-[11px] font-semibold text-sand-400 transition-colors hover:border-mint-500/40 hover:text-sand-100">WP</button>
+        <button type="button" data-quick-copy="shopify" class="rounded-md border border-ink-600 px-2.5 py-1.5 text-[11px] font-semibold text-sand-400 transition-colors hover:border-mint-500/40 hover:text-sand-100">Shopify</button>
+      </div>
+      <div class="flex items-center gap-2">
+        <button type="button" id="modal-close-text" class="rounded-lg border border-ink-600 px-3.5 py-2 text-xs font-semibold text-sand-400 transition-colors hover:border-sand-500/40 hover:text-sand-100">
+          Close (Esc)
+        </button>
+        <button type="button" id="modal-copy-again" class="rounded-lg bg-mint-500 px-4 py-2 text-xs font-bold text-ink-950 transition-colors hover:bg-mint-400">
+          Copy again
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

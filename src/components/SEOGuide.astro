@@ -1,0 +1,135 @@
+---
+// Structured ~800-word SEO/GEO guide rendered below the tool.
+---
+
+<section id="guide" class="mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:px-8">
+  <article class="prose-invert">
+    <p class="text-xs font-semibold uppercase tracking-widest text-mint-400">The GEO guide</p>
+    <h2 class="mt-3 text-3xl font-bold tracking-tight text-sand-100 sm:text-4xl">
+      Why AI Search Engines (Perplexity &amp; SearchGPT) Require GEO-Optimized Schema
+    </h2>
+    <p class="mt-4 text-sm leading-relaxed text-sand-500">
+      A practical explainer for SEOs and webmasters — written in plain language, with the
+      <a href="/tools/schema-generator/#checklist" class="font-semibold text-mint-300 underline decoration-mint-500/40 underline-offset-4 transition-colors hover:text-mint-200">free GEO checklist</a>
+      as its backbone.
+    </p>
+
+    <div class="mt-10 space-y-8 text-[15px] leading-relaxed text-sand-300">
+      <p>
+        For two decades, search was a ranked list. Google crawled pages, scored them with
+        PageRank and dozens of relevance signals, and returned ten blue links. Ranking was a
+        zero-sum tournament, and the winners were the pages that optimized most aggressively
+        for the crawlers' scoring functions.
+      </p>
+      <p>
+        That era is ending. A growing share of queries now flow through
+        <strong class="text-sand-100">answer engines</strong> — Perplexity, SearchGPT, Google's
+        AI Overviews, Claude and ChatGPT with search — which do not return a list at all. They
+        <em>synthesize an answer</em> and cite the sources they used. The strategic question for
+        every publisher has changed from <em>"How do I rank?"</em> to
+        <em>"How do I get cited?"</em>. That shift is what Generative Engine Optimization (GEO)
+        addresses — and JSON-LD structured data is the most direct lever a webmaster controls.
+      </p>
+
+      <h3 class="pt-2 text-xl font-bold text-sand-100">What changed: from ranked lists to synthesized answers</h3>
+      <p>
+        Traditional SEO optimizes for a crawler's index. GEO optimizes for an LLM's reasoning
+        context. When a language model answers "which SEO tool is fastest?", it does not read
+        the search result ranking — it retrieves candidate documents, extracts claims, and
+        assembles an answer from the passages it trusts. Two properties decide whether your
+        page becomes part of that answer: <strong class="text-sand-100">retrievability</strong>
+        (can the pipeline find and parse your content?) and
+        <strong class="text-sand-100">trust</strong> (can it verify who you are and what you claim?).
+        Structured data feeds both. It tells the parser exactly what the page is, who published
+        it, and how the entity behind it connects to the rest of the web.
+      </p>
+
+      <h3 class="pt-2 text-xl font-bold text-sand-100">How answer engines decide what to cite</h3>
+      <p>
+        Citation is the currency of the answer economy. Before an assistant quotes you, its
+        pipeline typically checks three things — and each one maps to a field in the
+        <a href="/tools/schema-generator/#checklist" class="font-semibold text-mint-300 underline decoration-mint-500/40 underline-offset-4 transition-colors hover:text-mint-200">GEO checklist</a>
+        of our free schema generator:
+      </p>
+      <ul class="mt-3 list-disc space-y-2 pl-6">
+        <li>
+          <strong class="text-sand-100">Entity verification.</strong> Does the page's organization
+          or author exist as a stable, cross-linked entity? <code class="text-mint-300">sameAs</code>
+          links to Wikidata, Wikipedia or LinkedIn give the pipeline a verifiable identity —
+          the single strongest signal that content came from the entity it claims.
+        </li>
+        <li>
+          <strong class="text-sand-100">Attribution.</strong> Can the answer name its source?
+          Without explicit <code class="text-mint-300">author</code> and
+          <code class="text-mint-300">publisher</code> entities, an assistant can quote your
+          words but cannot credit them — and unattributed content is systematically
+          de-prioritized.
+        </li>
+        <li>
+          <strong class="text-sand-100">Verifiability.</strong> Claims backed by
+          <code class="text-mint-300">citation</code> links to authoritative sources survive
+          cross-checking. Claims without them are treated as unverified assertions.
+        </li>
+      </ul>
+      <p>
+        Descriptions matter here more than anywhere else: an AI assistant often cites the
+        <code class="text-mint-300">description</code> field verbatim in its answer card. A
+        thin or missing description silently disqualifies you from being quotable.
+      </p>
+
+      <h3 class="pt-2 text-xl font-bold text-sand-100">Why FAQ markup is the fastest GEO win</h3>
+      <p>
+        Answer engines reward pages that answer a question directly, in one self-contained
+        passage. <code class="text-mint-300">FAQPage</code> schema packages exactly that: a
+        question paired with an accepted answer, parseable in a single hop. It is the closest
+        thing to writing the answer engine's output for it — which is why FAQ pages on
+        Perplexity and SearchGPT consistently outperform longer, unstructured articles that
+        bury the answer three paragraphs deep. Keep answers to one to three sentences, and
+        make each one factual enough to survive cross-checking.
+      </p>
+
+      <h3 class="pt-2 text-xl font-bold text-sand-100">The test bed is already here</h3>
+      <p>
+        Perplexity and SearchGPT are not a future scenario; they are live distribution channels
+        with measurable traffic today. Both display citation cards, both render entity boxes,
+        and both are trained to prefer well-structured, entity-rich pages. Because answer
+        engines are text-based, every piece of schema you emit is content they actually read —
+        not metadata skimmed by a crawler. The ROI math is unusual: a static
+        <code class="text-mint-300">script type="application/ld+json"</code> tag in the
+        <code class="text-mint-300">head</code> costs nothing to serve, yet it directly
+        influences which pages get quoted.
+      </p>
+
+      <h3 class="pt-2 text-xl font-bold text-sand-100">Deploying what you just built</h3>
+      <p>
+        The output panel gives you three deployment paths. On WordPress, paste the header code
+        once via a snippet plugin such as WPCode — one snippet, site-wide. On Shopify, the
+        Liquid tag drops into <code class="text-mint-300">theme.liquid</code> or a reusable
+        snippet rendered per template. On any other platform, the raw JSON-LD goes inside a
+        <code class="text-mint-300">&lt;script type="application/ld+json"&gt;</code> block in
+        the <code class="text-mint-300">head</code>, or through your tag manager. Then validate
+        with the Schema.org validator before shipping.
+      </p>
+
+      <h3 class="pt-2 text-xl font-bold text-sand-100">Measure what you cannot rank for</h3>
+      <p>
+        GEO metrics are immature, which is an opportunity, not a problem. Track your brand's
+        citation share in Perplexity and SearchGPT answers for your head terms, watch AI
+        Overviews appearances, and treat structured-data validation errors as release blockers.
+        The teams acting now are setting the baseline that everyone else will be measured
+        against in twelve months.
+      </p>
+
+      <h3 class="pt-2 text-xl font-bold text-sand-100">The short version</h3>
+      <p>
+        Search is becoming a conversation, and conversations cite sources. The pages that win
+        will be the ones an answer engine can identify, attribute, and verify in milliseconds.
+        Structured data is the fastest way to make that true — a few fields of schema are
+        often the difference between being quoted and being skipped. Run the
+        <a href="/tools/schema-generator/" class="font-semibold text-mint-300 underline decoration-mint-500/40 underline-offset-4 transition-colors hover:text-mint-200">free GEO checklist</a>
+        against your own pages, fix the amber items, and ship the schema with the copy button.
+        That is the entire discipline of GEO in one workflow.
+      </p>
+    </div>
+  </article>
+</section>

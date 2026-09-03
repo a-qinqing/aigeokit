@@ -1,0 +1,6 @@
+# Cloudflare Pages response headers (static hosting)
+# Applied to every route of the geo-kit site.
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
