@@ -287,24 +287,19 @@ async function copyText(text: string): Promise<boolean> {
 }
 
 /**
- * Recommendation card — clean and non-intrusive. Affiliate URLs are
- * placeholders; swap `example.com/aff-*` for your own affiliate links.
+ * Recommendation card — clean and non-intrusive. WPCode link is our
+ * affiliate URL (library.wpcode.com/?ref=207).
  */
 const RECO_CARD_HTML = `
   <div class="rounded-xl border border-mint-500/25 bg-mint-500/5 p-4">
     <h3 class="text-sm font-bold text-sand-100">Deploying to WordPress or Shopify?</h3>
     <p class="mt-1.5 text-[13px] leading-relaxed text-sand-300">
-      Insert this JSON-LD without editing theme files using WPCode Pro, or
-      automate your GEO tracking with Semrush.
+      Insert this JSON-LD without editing theme files using WPCode Pro.
     </p>
     <div class="mt-3.5 flex flex-wrap gap-2">
-      <a href="https://example.com/aff-wpcode" target="_blank" rel="noopener sponsored"
+      <a href="https://library.wpcode.com/?ref=207" target="_blank" rel="noopener sponsored"
          class="rounded-lg bg-mint-500 px-3.5 py-2 text-xs font-bold text-ink-950 transition-colors hover:bg-mint-400">
         Get WPCode (Special Offer)
-      </a>
-      <a href="https://example.com/aff-semrush" target="_blank" rel="noopener sponsored"
-         class="rounded-lg border border-ink-600 px-3.5 py-2 text-xs font-semibold text-sand-200 transition-colors hover:border-mint-500/40 hover:text-sand-100">
-        Explore Semrush GEO Features
       </a>
     </div>
   </div>`;
@@ -485,7 +480,16 @@ function wireEvents(): void {
     }
   });
   $<HTMLButtonElement>('#modal-copy-again').addEventListener('click', async () => {
-    await copyText(currentCode());
+    const ok = await copyText(currentCode());
+    if (!ok) return;
+    const btn = $<HTMLButtonElement>('#modal-copy-again');
+    // Keep the label; flash the button a lighter mint as click feedback.
+    btn.classList.replace('bg-mint-500', 'bg-mint-300');
+    btn.classList.replace('hover:bg-mint-400', 'hover:bg-mint-300');
+    window.setTimeout(() => {
+      btn.classList.replace('bg-mint-300', 'bg-mint-500');
+      btn.classList.replace('hover:bg-mint-300', 'hover:bg-mint-400');
+    }, 600);
   });
   document.querySelectorAll<HTMLButtonElement>('[data-quick-copy]').forEach((btn) => {
     btn.addEventListener('click', async () => {
