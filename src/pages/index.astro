@@ -50,16 +50,16 @@ const jsonLd = [
   <Hero />
 
   <main>
-    <!-- Featured tools — live tools grid; everything else lives in /tools/ -->
+    <!-- Featured tools — spacious stacked cards; everything else lives in /tools/ -->
     <section id="featured" class="relative mx-auto max-w-7xl scroll-mt-20 px-4 py-16 sm:px-6 lg:px-8">
       <div aria-hidden="true" class="pointer-events-none absolute inset-0">
         <div class="absolute -top-24 right-0 h-[280px] w-[560px] rounded-full bg-mint-500/[0.07] blur-[100px]"></div>
       </div>
 
-      <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+      <div class="space-y-6">
         <!-- Live: JSON-LD Schema Generator -->
-        <div class="flex flex-col gap-8 overflow-hidden rounded-3xl border border-ink-700 bg-ink-850 p-8 sm:p-10 lg:flex-row lg:items-center lg:justify-between">
-          <div class="max-w-xl">
+        <div class="flex flex-col gap-8 overflow-hidden rounded-3xl border border-zinc-800/80 bg-ink-850 p-8 transition-colors hover:border-emerald-500/40 sm:p-10 lg:flex-row lg:items-center lg:justify-between">
+          <div class="max-w-2xl">
             <p class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-mint-400">
               <span class="relative flex h-2 w-2">
                 <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-mint-400 opacity-60"></span>
@@ -80,59 +80,52 @@ const jsonLd = [
               <li class="rounded-full border border-ink-600 bg-ink-900 px-3 py-1 text-[11px] font-medium text-sand-300">8 schema types</li>
             </ul>
           </div>
-          <div class="flex shrink-0 flex-col gap-3 sm:flex-row lg:flex-col">
-            <a
-              href="/tools/schema-generator/"
-              class="rounded-xl bg-mint-500 px-7 py-3.5 text-center text-sm font-bold text-ink-950 shadow-lg shadow-mint-500/20 transition-all hover:bg-mint-400"
-            >
-              Open Tool →
-            </a>
-            <a
-              href="/tools/"
-              class="rounded-xl border border-ink-600 bg-ink-900 px-7 py-3.5 text-center text-sm font-bold text-sand-100 transition-colors hover:border-mint-500/40 hover:text-mint-300"
-            >
-              View All Tools →
-            </a>
-          </div>
+          <a
+            href="/tools/schema-generator/"
+            class="shrink-0 self-start rounded-xl bg-mint-500 px-7 py-3.5 text-center text-sm font-bold text-ink-950 shadow-lg shadow-mint-500/20 transition-all hover:bg-mint-400 sm:self-auto"
+          >
+            Open Tool →
+          </a>
         </div>
 
-        <!-- Live: AI Robots.txt Checker (NEW badge) -->
-        <div class="flex flex-col gap-8 overflow-hidden rounded-3xl border border-ink-700 bg-ink-850 p-8 transition-colors hover:border-mint-500/40 sm:p-10 lg:flex-row lg:items-center lg:justify-between">
-          <div class="max-w-xl">
-            <p class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-mint-400">
-              <span class="inline-flex items-center rounded-full border border-mint-500/30 bg-mint-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">
-                NEW
-              </span>
-              GEO Essential · Live now
+        <!-- Live: AI Robots.txt Checker -->
+        <div class="flex flex-col gap-8 overflow-hidden rounded-3xl border border-zinc-800/80 bg-ink-850 p-8 transition-colors hover:border-emerald-500/40 sm:p-10 lg:flex-row lg:items-center lg:justify-between">
+          <div class="max-w-2xl">
+            <p class="inline-flex items-center rounded-full border border-mint-500/30 bg-mint-500/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-mint-300">
+              New Tool • GEO Essential
             </p>
             <h2 class="mt-3 text-2xl font-bold tracking-tight text-sand-100 sm:text-3xl">
               AI Robots.txt Checker
             </h2>
             <p class="mt-3 text-sm leading-relaxed text-sand-400">
-              Check if GPTBot, OAI-SearchBot, PerplexityBot, and ClaudeBot can crawl your site for
-              GEO &amp; AI Search — with a 0-100 AI Crawlability Score and copy-paste fixes.
+              Test if GPTBot, OAI-SearchBot, PerplexityBot, and ClaudeBot can crawl your site.
+              Get a 0-100 AI Crawlability Score with instant code fixes.
             </p>
-            <ul class="mt-4 flex flex-wrap gap-2">
-              <li class="rounded-full border border-ink-600 bg-ink-900 px-3 py-1 text-[11px] font-medium text-sand-300">9 AI crawlers · 3 classes</li>
-              <li class="rounded-full border border-ink-600 bg-ink-900 px-3 py-1 text-[11px] font-medium text-sand-300">0-100 AI Crawlability Score</li>
-              <li class="rounded-full border border-ink-600 bg-ink-900 px-3 py-1 text-[11px] font-medium text-sand-300">Paste fallback · privacy-first</li>
+            <ul class="mt-4 flex flex-wrap items-center gap-2">
+              <li class="rounded-full border border-ink-600 bg-ink-900 px-3 py-1 text-[11px] font-medium text-sand-300">GPTBot &amp; PerplexityBot</li>
+              <li aria-hidden="true" class="text-sand-600">·</li>
+              <li class="rounded-full border border-ink-600 bg-ink-900 px-3 py-1 text-[11px] font-medium text-sand-300">RFC 9309 Rules</li>
+              <li aria-hidden="true" class="text-sand-600">·</li>
+              <li class="rounded-full border border-ink-600 bg-ink-900 px-3 py-1 text-[11px] font-medium text-sand-300">Privacy-First</li>
             </ul>
           </div>
-          <div class="flex shrink-0 flex-col gap-3 sm:flex-row lg:flex-col">
-            <a
-              href="/tools/ai-robots-txt-checker/"
-              class="rounded-xl bg-mint-500 px-7 py-3.5 text-center text-sm font-bold text-ink-950 shadow-lg shadow-mint-500/20 transition-all hover:bg-mint-400"
-            >
-              Open Tool →
-            </a>
-            <a
-              href="/tools/"
-              class="rounded-xl border border-ink-600 bg-ink-900 px-7 py-3.5 text-center text-sm font-bold text-sand-100 transition-colors hover:border-mint-500/40 hover:text-mint-300"
-            >
-              View All Tools →
-            </a>
-          </div>
+          <a
+            href="/tools/ai-robots-txt-checker/"
+            class="shrink-0 self-start rounded-xl bg-mint-500 px-7 py-3.5 text-center text-sm font-bold text-ink-950 shadow-lg shadow-mint-500/20 transition-all hover:bg-mint-400 sm:self-auto"
+          >
+            Analyze Robots.txt →
+          </a>
         </div>
+      </div>
+
+      <!-- Section-level link to the full suite -->
+      <div class="mt-8 text-center">
+        <a
+          href="/tools/"
+          class="inline-flex items-center gap-1.5 rounded-xl border border-ink-600 bg-ink-900 px-6 py-3 text-sm font-bold text-sand-100 transition-colors hover:border-mint-500/40 hover:text-mint-300"
+        >
+          View All Tools →
+        </a>
       </div>
     </section>
 
