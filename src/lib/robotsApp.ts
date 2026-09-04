@@ -114,22 +114,67 @@ function renderLoading(label: string): void {
     </p>`;
 }
 
-function renderError(title: string, detail: string, hintPaste = true): void {
+interface ErrorOptions {
+  /** Show an inline paste-textarea so users can analyze locally right away
+   *  (fetch failures, timeouts, missing robots.txt, ...). */
+  fallback?: boolean;
+  /** Show the "switch to paste mode" shortcut button. */
+  hintPaste?: boolean;
+}
+
+function renderError(title: string, detail: string, opts: ErrorOptions = {}): void {
+  const { fallback = false, hintPaste = true } = opts;
   resultsBox.classList.add('hidden');
   statusBox.innerHTML = `
     <div role="alert" class="rounded-xl border border-red-500/30 bg-red-500/10 p-4">
       <p class="text-sm font-bold text-red-300">${esc(title)}</p>
       <p class="mt-1 text-[13px] leading-relaxed text-red-200/80">${esc(detail)}</p>
       ${
-        hintPaste
+        !fallback && hintPaste
           ? `<button type="button" id="robots-error-paste" class="mt-3 rounded-lg border border-ink-600 px-3 py-1.5 text-xs font-semibold text-sand-300 transition-colors hover:border-mint-500/40">
                📋 Switch to paste mode
              </button>`
           : ''
       }
-    </div>`;
+    </div>
+    ${
+      fallback
+        ? `
+    <div class="mt-3 rounded-xl border border-ink-700 bg-ink-850 p-4">
+      <label for="robots-fallback-paste" class="text-xs font-bold text-sand-100">
+        📋 Paste your robots.txt to analyze it locally instead
+      </label>
+      <textarea id="robots-fallback-paste" rows="8" spellcheck="false"
+        placeholder="User-agent: *&#10;Allow: /&#10;&#10;User-agent: GPTBot&#10;Disallow: /"
+        class="mt-2 w-full resize-y rounded-xl border border-ink-600 bg-ink-900 px-3 py-2 font-mono text-xs leading-relaxed text-sand-100 placeholder:text-sand-500 focus:border-mint-500 focus:outline-none"></textarea>
+      <p class="mt-1.5 text-[11px] text-sand-500">Parsed 100% in your browser — nothing is sent anywhere.</p>
+      <button type="button" id="robots-fallback-run"
+              class="mt-2 rounded-lg bg-mint-500 px-4 py-2 text-xs font-bold text-ink-950 transition-colors hover:bg-mint-400">
+        Analyze pasted text
+      </button>
+    </div>`
+        : ''
+    }`;
   const hint = document.getElementById('robots-error-paste');
   hint?.addEventListener('click', () => setMode('paste'));
+  const run = document.getElementById('robots-fallback-run');
+  run?.addEventListener('click', () => {
+    const ta = document.getElementById('robots-fallback-paste') as HTMLTextAreaElement | null;
+    if (!ta) return;
+    if (!ta.value.trim()) {
+      renderError('Paste your robots.txt first', 'Copy the contents of your robots.txt file into the box above.', {
+        fallback: true,
+        hintPaste: false,
+      });
+      return;
+    }
+    const analysis = analyzeRobotsTxt(ta.value);
+    renderReport(
+      analysis,
+      { label: 'Pasted robots.txt', note: 'Analyzed 100% in your browser — nothing was sent over the network.' },
+      ta.value,
+    );
+  });
 }
 
 /* ------------------------------- Modes ---------------------------------- */
@@ -180,7 +225,8 @@ async function checkUrl(rawUrl: string): Promise<void> {
   } catch {
     renderError(
       'Checker service unavailable',
-      'The /api/check-robots edge function could not be reached. If you are on the local dev server, run the full check via "wrangler pages dev" — or analyze a pasted robots.txt right now.',
+      'The /api/check-robots edge function could not be reached. Paste the file below to analyze it locally — it never leaves your browser.',
+      { fallback: true, hintPaste: false },
     );
     return;
   }
@@ -193,12 +239,17 @@ async function checkUrl(rawUrl: string): Promise<void> {
       timeout: 'The site did not respond in time',
       unreachable: 'Could not reach that site',
     };
+    // Fetch-grade failures auto-reveal the local paste fallback.
+    const autoFallback = ['timeout', 'unreachable', 'no-robots', 'not-robots-txt'].includes(
+      payload.error,
+    );
     renderError(
       titles[payload.error] ?? 'Could not check that domain',
       payload.message +
         (payload.error === 'no-robots' || payload.error === 'unreachable'
           ? ' The site may be offline, blocking automated fetches, or genuinely have no robots.txt.'
           : ''),
+      autoFallback ? { fallback: true, hintPaste: false } : { hintPaste: false },
     );
     return;
   }
@@ -260,6 +311,7 @@ function renderReport(report: Report, meta: ReportMeta, raw: string): void {
   const sourceLabel = meta.label === 'Pasted robots.txt' ? 'pasted content' : 'fetched file';
   resultsBox.innerHTML = `
     ${scoreCardHtml(report, meta)}
+    ${scoreDiagnosisHtml(report.bots_status)}
     ${summaryHtml(report.summary)}
     ${categoryCardsHtml(report.bots_status)}
     ${snippetCardHtml()}
@@ -306,6 +358,62 @@ function scoreCardHtml(report: Report, meta: ReportMeta): string {
         </div>
       </div>
     </div>`;
+}
+
+/* --------------------- Score attribution diagnosis ---------------------- */
+// Points behind a fully blocked crawler per category (out of 100, weights
+// 3/2/1 over 17 → 18 / 12 / 6). Implicit ("Default") access keeps half.
+const PTS_BLOCKED: Record<BotStatusRow['category'], number> = {
+  'ai-search': 18,
+  training: 6,
+  'user-triggered': 12,
+};
+const PRODUCT_OF: Record<string, string> = {
+  'oai-searchbot': 'SearchGPT & ChatGPT search',
+  perplexitybot: 'Perplexity answers',
+  bingbot: 'Bing AI / Copilot',
+  'chatgpt-user': 'live ChatGPT browsing',
+  'claude-web': 'live Claude browsing',
+  gptbot: 'OpenAI training',
+  claudebot: 'Claude training',
+  'google-extended': 'Google AI features',
+  ccbot: 'LLM training sets',
+};
+
+/** One dynamic sentence attributing the biggest score deductions. */
+function scoreDiagnosisHtml(rows: BotStatusRow[]): string {
+  const names = (r: BotStatusRow[]) =>
+    r.map((x) => `<strong class="text-sand-100">${esc(x.name)}</strong>`).join(', ');
+  const products = (r: BotStatusRow[]) =>
+    [...new Set(r.map((x) => PRODUCT_OF[x.ua_token] ?? x.name))].join(' & ');
+
+  const blockedSearch = rows.filter((r) => r.category === 'ai-search' && r.status === 'disallowed');
+  const defaultSearch = rows.filter((r) => r.category === 'ai-search' && r.status === 'default_allowed');
+  const blockedUser = rows.filter((r) => r.category === 'user-triggered' && r.status === 'disallowed');
+  const blockedTraining = rows.filter((r) => r.category === 'training' && r.status === 'disallowed');
+  const defaultTraining = rows.filter((r) => r.category === 'training' && r.status === 'default_allowed');
+  const defaultUser = rows.filter((r) => r.category === 'user-triggered' && r.status === 'default_allowed');
+
+  let msg: string;
+  if (blockedSearch.length > 0) {
+    msg = `You block ${names(blockedSearch)} (−${PTS_BLOCKED['ai-search']} pts each) — ${products(blockedSearch)} can no longer cite your pages. This is the heaviest drag on your score.`;
+  } else if (defaultSearch.length > 0) {
+    msg = `${names(defaultSearch)} are only implicitly allowed (−${PTS_BLOCKED['ai-search'] / 2} pts each) — an explicit Allow: / rule keeps you citable in ${products(defaultSearch)}.`;
+  } else if (blockedUser.length > 0) {
+    msg = `You block ${names(blockedUser)} (−${PTS_BLOCKED['user-triggered']} pts each) — ${products(blockedUser)} cannot reach your pages on demand.`;
+  } else if (blockedTraining.length > 0) {
+    msg = `Training crawlers ${names(blockedTraining)} are blocked (−${PTS_BLOCKED['training']} pts each) — a deliberate opt-out; citation crawlers are unaffected.`;
+  } else if (defaultTraining.length > 0 || defaultUser.length > 0) {
+    const rest = [...defaultTraining, ...defaultUser];
+    msg = `${names(rest)} inherit your wildcard rules (${esc(rest[0].rule_line)}) — add explicit rules to lock in your current stance.`;
+  } else {
+    msg = 'No deductions — every monitored crawler is explicitly allowed.';
+  }
+
+  return `
+    <p class="mt-3 rounded-xl border border-ink-700 bg-ink-900/60 px-4 py-2.5 text-xs leading-relaxed text-sand-400">
+      💡 <span class="font-semibold text-sand-100">Diagnosis:</span> ${msg}
+    </p>`;
 }
 
 function summaryHtml(summary: string[]): string {
@@ -497,6 +605,15 @@ function snippetCardHtml(): string {
           Copy to Clipboard
         </button>
       </div>
+      <div class="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-ink-700 bg-ink-900/60 px-3.5 py-2.5">
+        <p class="text-[11px] leading-relaxed text-sand-400">
+          💡 Using WordPress? Manage and deploy these custom rules safely with WPCode.
+        </p>
+        <a href="https://library.wpcode.com/?ref=207" target="_blank" rel="nofollow sponsored"
+           class="shrink-0 rounded-lg bg-mint-500 px-3 py-1.5 text-[11px] font-bold text-ink-950 transition-colors hover:bg-mint-400">
+          Get WPCode →
+        </a>
+      </div>
     </div>`;
 }
 
@@ -605,7 +722,9 @@ form.addEventListener('submit', (e) => {
   if (mode === 'url') {
     const value = urlInput.value.trim();
     if (!value) {
-      renderError('Enter a domain first', 'For example: example.com — or https://example.com.');
+      renderError('Enter a domain first', 'For example: example.com — or https://example.com.', {
+        hintPaste: false,
+      });
       return;
     }
     busy = true;
@@ -615,7 +734,9 @@ form.addEventListener('submit', (e) => {
   } else {
     const text = pasteInput.value;
     if (!text.trim()) {
-      renderError('Paste your robots.txt first', 'Copy the contents of your robots.txt file into the box above.');
+      renderError('Paste your robots.txt first', 'Copy the contents of your robots.txt file into the box above.', {
+        hintPaste: false,
+      });
       return;
     }
     busy = true;
@@ -623,6 +744,14 @@ form.addEventListener('submit', (e) => {
       busy = false;
     });
   }
+});
+
+// Quick Try preset tags: fill the URL input and analyze immediately.
+urlBlock.addEventListener('click', (e) => {
+  const target = (e.target as HTMLElement).closest('button[data-quicktry]') as HTMLButtonElement | null;
+  if (!target?.dataset.quicktry) return;
+  urlInput.value = target.dataset.quicktry;
+  if (!busy) form.requestSubmit();
 });
 
 modeToggle.addEventListener('click', () => setMode(mode === 'url' ? 'paste' : 'url'));
