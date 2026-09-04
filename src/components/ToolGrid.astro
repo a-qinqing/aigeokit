@@ -8,6 +8,8 @@ interface ToolCard {
   icon: string;
   status: 'live' | 'soon';
   href?: string;
+  /** Optional green pill shown next to the card title (e.g. "NEW"). */
+  badge?: string;
 }
 
 const TOOL_CARDS: ToolCard[] = [
@@ -21,8 +23,9 @@ const TOOL_CARDS: ToolCard[] = [
   {
     status: 'live',
     href: '/tools/ai-robots-txt-checker/',
-    name: 'AI Robots.txt & Crawler Checker',
-    desc: 'Verify if GPTBot, PerplexityBot, or ClaudeBot are properly configured in your robots.txt.',
+    name: 'AI Robots.txt Checker',
+    badge: 'NEW',
+    desc: 'Check if GPTBot, OAI-SearchBot, PerplexityBot, and ClaudeBot can crawl your site for GEO & AI Search.',
     icon: '<path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/>',
   },
   {
@@ -57,7 +60,14 @@ const TOOL_CARDS: ToolCard[] = [
           <span class="portal-icon mb-4 grid h-11 w-11 place-items-center rounded-xl bg-ink-800 text-sand-300 ring-1 ring-ink-600 transition-colors group-hover:bg-mint-500/10 group-hover:text-mint-400 group-hover:ring-mint-500/30">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5" set:html={t.icon} />
           </span>
-          <span class="block text-sm font-bold text-sand-100">{t.name}</span>
+          <span class="flex items-start justify-between gap-2">
+            <span class="text-sm font-bold text-sand-100">{t.name}</span>
+            {t.badge && (
+              <span class="mt-0.5 shrink-0 rounded-full border border-mint-500/30 bg-mint-500/15 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-mint-300">
+                {t.badge}
+              </span>
+            )}
+          </span>
           <span class="mt-1 block text-xs leading-relaxed text-sand-500">{t.desc}</span>
           <span class="mt-4 flex items-center justify-between">
             {t.status === 'live' ? (
