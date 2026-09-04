@@ -24,12 +24,12 @@ import GeoChecklist from './GeoChecklist.astro';
     </p>
   </div>
 
-  <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_1.15fr]">
+  <div class="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
     <!-- form -->
-    <form id="schema-form" class="space-y-7" novalidate></form>
+    <form id="schema-form" class="min-w-0 space-y-7" novalidate></form>
 
     <!-- output + checklist -->
-    <div class="lg:sticky lg:top-20 lg:self-start">
+    <div class="min-w-0 lg:sticky lg:top-20 lg:self-start">
       <CodeOutput />
       <GeoChecklist />
     </div>

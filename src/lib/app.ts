@@ -194,6 +194,13 @@ function renderForm(): void {
 
 /* ---------- output rendering ---------- */
 
+/** Copy-button label follows the active platform (raw → JSON, WordPress → HTML snippet, Shopify → Liquid). */
+const COPY_LABELS: Record<PlatformId, string> = {
+  raw: 'Copy JSON-LD',
+  wordpress: 'Copy HTML',
+  shopify: 'Copy Liquid',
+};
+
 function currentCode(): string {
   return ADAPTERS[state.platform](GENERATORS[state.tool](state.values));
 }
@@ -212,7 +219,7 @@ function renderOutput(): void {
 
   const copyBtn = $<HTMLButtonElement>('#copy-btn');
   copyBtn.removeAttribute('data-copied');
-  copyBtn.textContent = 'Copy JSON-LD';
+  copyBtn.textContent = COPY_LABELS[state.platform];
 }
 
 /* ---------- GEO checklist rendering ---------- */
@@ -334,7 +341,7 @@ async function copyAndConfirm(): Promise<void> {
     btn.textContent = 'Copy failed — select the code manually';
   }
   window.setTimeout(() => {
-    btn.textContent = 'Copy JSON-LD';
+    btn.textContent = COPY_LABELS[state.platform];
   }, 4000);
 }
 
