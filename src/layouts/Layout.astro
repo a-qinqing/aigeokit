@@ -4,6 +4,8 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
+  /** Optional meta keywords (page-level SEO). */
+  keywords?: string;
   /** Absolute canonical URL of this page (used for canonical, og:url, twitter:url).
    *  Pass false to omit (error pages). */
   canonical?: string | false;
@@ -22,6 +24,7 @@ const {
   canonical = 'https://www.aigeokit.com/',
   image = 'https://www.aigeokit.com/og-image.png',
   robots = 'index, follow',
+  keywords,
   jsonLd,
 } = Astro.props;
 
@@ -52,6 +55,7 @@ const showUrl = canonical !== false && canonical !== undefined && canonical !== 
     <link rel="alternate icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="robots" content={robots} />
+    {keywords && <meta name="keywords" content={keywords} />}
     <meta name="theme-color" content="#0b0f0e" />
     <!-- Cloudflare Web Analytics site verification (name + value per CF docs) -->
     <Fragment set:html='<meta name="impact-site-verification" value="e18e3eeb-8106-495e-aa28-00d453dea728" />' />

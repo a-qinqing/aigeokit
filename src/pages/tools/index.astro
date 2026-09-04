@@ -24,7 +24,12 @@ const jsonLd = {
       name: 'JSON-LD Schema Generator & GEO Checklist',
       url: 'https://www.aigeokit.com/tools/schema-generator/',
     },
-    { '@type': 'ListItem', position: 2, name: 'AI Robots.txt & Crawler Checker' },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'AI Robots.txt & Crawler Checker',
+      url: 'https://www.aigeokit.com/tools/ai-robots-txt-checker/',
+    },
     { '@type': 'ListItem', position: 3, name: 'llm.txt File Builder' },
     { '@type': 'ListItem', position: 4, name: 'GEO Citation Analyzer' },
   ],
@@ -37,7 +42,7 @@ const faqs = [
   },
   {
     q: 'Does my content or data leave my device?',
-    a: 'No. Every generator runs 100% client-side: your URLs, schema and checklist scores are computed locally and are never uploaded, stored or tracked anywhere.',
+    a: 'No — generators run 100% client-side: your schema, scores and pasted content are computed locally and never uploaded, stored or tracked anywhere. The one exception is the Robots.txt Checker\'s URL mode, which fetches the site\'s public robots.txt through the AIGEOKit edge proxy (paste mode stays fully local).',
   },
   {
     q: 'What does the GEO Readiness Checklist measure?',

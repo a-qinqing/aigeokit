@@ -1,0 +1,443 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { AI_BOTS, CATEGORY_LABELS, primaryToken } from '../../lib/robots';
+import type { AiBot } from '../../lib/robots';
+
+const PAGE_URL = 'https://www.aigeokit.com/tools/ai-robots-txt-checker/';
+const title = 'AI Robots.txt Checker - GPTBot, ClaudeBot & Perplexity Test | AIGEOKit';
+const description =
+  'Check if your robots.txt blocks or allows AI crawlers like GPTBot, OAI-SearchBot, PerplexityBot, and ClaudeBot. Optimize your site for GEO & AI Search.';
+const keywords =
+  'AI robots txt checker, GPTBot checker, PerplexityBot access check, ClaudeBot robots txt, OAI-SearchBot test, GEO robots txt audit, AI crawler blocker checker';
+
+/** Recommended robots.txt stance per monitored crawler (reference table). */
+const SUGGESTED_RULES: Record<AiBot['id'], string> = {
+  'oai-searchbot': 'Allow: / — required for SearchGPT citations',
+  perplexitybot: 'Allow: / — required for Perplexity answers',
+  bingbot: 'Allow: / — Bingbot feeds Bing AI & Copilot citations',
+  gptbot: 'Allow: / or Disallow: / — your training policy',
+  claudebot: 'Allow: / or Disallow: / — your training policy',
+  'google-extended':
+    'Disallow: / to opt out of AI Overviews & Vertex; Allow: / to stay included',
+  ccbot: 'Allow: / or Disallow: / — feeds many LLM training sets',
+  'chatgpt-user': 'Allow: / — enables live ChatGPT browsing',
+  'claude-web': 'Allow: / — enables live Claude browsing',
+};
+
+const faqs = [
+  {
+    q: 'What do Allowed, Blocked and Default mean?',
+    a: 'Allowed means this crawler has an explicit rule and can read your site root. Blocked means a rule denies it access to your whole site — usually a Disallow: / entry. Default means no rule mentions this crawler, so it inherits your User-agent: * rules (or, without a wildcard group, is simply allowed by default): nothing blocks it today, but no AI vendor sees an explicit signal either, which is why adding an explicit rule is the safest GEO move.',
+  },
+  {
+    q: 'Do AI crawlers actually respect robots.txt?',
+    a: 'The major vendors say they do: OpenAI (GPTBot, OAI-SearchBot, ChatGPT-User), Anthropic (ClaudeBot, Claude-Web), Microsoft (Bingbot), Perplexity, Google (Google-Extended) and Common Crawl (CCBot) all document robots.txt support. Robots.txt is a request, not a legal guarantee — some smaller scrapers ignore it — so pair explicit allow rules with noai/noimageai meta tags on pages you want protected.',
+  },
+  {
+    q: 'I never added AI crawler rules — why does the checker flag issues?',
+    a: 'Because robots.txt groups that do not mention a crawler still apply to it when they use the wildcard User-agent: * token. A Disallow: / you added years ago for other reasons blocks GPTBot, PerplexityBot and every other AI crawler too. The checker shows a "via User-agent: *" source chip whenever that happens, and the suggestion panel generates the explicit allow rules that fix it.',
+  },
+  {
+    q: 'I block GPTBot — does that keep my content out of SearchGPT?',
+    a: 'Not by itself. SearchGPT and ChatGPT search use OAI-SearchBot, while on-demand browsing in ChatGPT uses ChatGPT-User — all three are separate user-agent tokens with separate rules. Blocking GPTBot mostly stops model-training use; add rules for the other two OpenAI tokens if you want full control. The same split exists at Perplexity (PerplexityBot vs Perplexity-User) and Anthropic (ClaudeBot vs Claude-Web).',
+  },
+  {
+    q: 'What is the difference between blocking AI crawlers and blocking AI features?',
+    a: 'Blocking a crawler stops its fetches entirely — and when the crawler doubles as the search indexer, as Bingbot does, the AI answers on top of it disappear too. Opt-out tokens like Google-Extended exist so you can keep normal Googlebot indexing while telling Google AI features such as AI Overviews that your content is off-limits. This checker treats every token as a separate row, so you can see exactly which lever you have pulled.',
+  },
+  {
+    q: 'Why does a URL check need a server, and is my data safe?',
+    a: 'Robots.txt is public data — your domain is fetched for the same reason a search engine fetches it. Browsers cannot read a third-party robots.txt directly (CORS), so AIGEOKit\'s edge function fetches the file for you; nothing is logged or stored. If you prefer zero network traffic, switch to paste mode: parsing then happens 100% in your browser.',
+  },
+];
+
+// Structured Data (JSON-LD for GEO/SEO)
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'AIGEOKit — AI Robots.txt & Crawler Access Checker',
+    url: PAGE_URL,
+    description,
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'All',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'AIGEOKit',
+      url: 'https://www.aigeokit.com/',
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://www.aigeokit.com/',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Tools',
+        item: 'https://www.aigeokit.com/tools/',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: 'AI Robots.txt & Crawler Access Checker',
+        item: PAGE_URL,
+      },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.a,
+      },
+    })),
+  },
+];
+
+const chips = [
+  { icon: '🤖', text: '9 AI crawlers — SearchGPT, Perplexity, Bing AI, GPTBot & more' },
+  { icon: '📊', text: '0-100 AI Crawlability score for GEO' },
+  { icon: '📋', text: 'Blocked or offline? Paste robots.txt contents instead' },
+  { icon: '💰', text: 'Free forever · no account needed' },
+];
+---
+
+<Layout title={title} description={description} keywords={keywords} canonical={PAGE_URL} jsonLd={jsonLd}>
+  <Header />
+
+  <!-- Tool landing strip -->
+  <section class="relative overflow-hidden">
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+      <div class="absolute -top-24 left-1/2 h-[320px] w-[720px] -translate-x-1/2 rounded-full bg-mint-500/10 blur-[110px]"></div>
+    </div>
+    <div class="relative mx-auto max-w-7xl px-4 pb-6 pt-10 sm:px-6 lg:px-8">
+      <!-- Breadcrumb: Home → Tools → AI Robots.txt Checker -->
+      <nav aria-label="Breadcrumb" class="text-xs text-sand-500">
+        <ol class="flex flex-wrap items-center gap-1.5">
+          <li><a href="/" class="font-medium transition-colors hover:text-mint-300">Home</a></li>
+          <li aria-hidden="true" class="text-sand-600">/</li>
+          <li><a href="/tools/" class="font-medium transition-colors hover:text-mint-300">Tools</a></li>
+          <li aria-hidden="true" class="text-sand-600">/</li>
+          <li aria-current="page" class="font-semibold text-sand-300">Robots.txt Checker</li>
+        </ol>
+      </nav>
+      <h1 class="mt-4 max-w-3xl text-balance text-3xl font-extrabold leading-tight tracking-tight text-sand-100 sm:text-4xl">
+        AI Robots.txt &amp; Crawler Access <span class="text-mint-400">Checker</span>
+      </h1>
+      <p class="mt-3 max-w-2xl text-pretty text-[15px] leading-relaxed text-sand-400">
+        Test if GPTBot, PerplexityBot, ClaudeBot, and other AI crawlers are allowed on your
+        website. Every monitored bot gets an <code class="text-mint-300">Allowed</code>,{' '}
+        <code class="text-mint-300">Blocked</code> or <code class="text-mint-300">Default</code> badge,
+        an AI Crawlability Score and copy-paste fixes for citation visibility.
+      </p>
+      <ul class="mt-6 flex flex-wrap gap-2">
+        {chips.map((c) => (
+          <li class="flex items-center gap-1.5 rounded-full border border-ink-700 bg-ink-850/70 px-3 py-1.5 text-[11px] font-medium text-sand-300">
+            <span aria-hidden="true">{c.icon}</span>{c.text}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <main>
+    <!-- Checker tool -->
+    <section id="checker" class="mx-auto max-w-5xl scroll-mt-20 px-4 pt-10 sm:px-6 lg:px-8">
+      <div class="rounded-2xl border border-ink-700 bg-ink-850 p-6 sm:p-8">
+        <form id="robots-form" novalidate>
+          <div id="robots-url-block" class="flex flex-col gap-2">
+            <label for="robots-url" class="text-sm font-bold text-sand-100">
+              Website domain
+            </label>
+            <div class="flex flex-col gap-3 sm:flex-row">
+              <input
+                id="robots-url"
+                name="url"
+                type="text"
+                inputmode="url"
+                autocomplete="off"
+                spellcheck="false"
+                placeholder="example.com"
+                class="min-w-0 flex-1 rounded-xl border border-ink-600 bg-ink-900 px-4 py-2.5 font-mono text-sm text-sand-100 placeholder:text-sand-500 focus:border-mint-500 focus:outline-none"
+              />
+              <button
+                type="submit"
+                class="shrink-0 rounded-xl bg-mint-500 px-6 py-2.5 text-sm font-bold text-ink-950 transition-colors hover:bg-mint-400"
+              >
+                Analyze Robots.txt
+              </button>
+            </div>
+            <p class="text-xs text-sand-500">
+              Fetches <code class="text-sand-300">https://&lt;domain&gt;/robots.txt</code> through the
+              AIGEOKit proxy. Wrong protocol, paths and ports are stripped automatically.
+            </p>
+          </div>
+
+          <div id="robots-paste-wrap" class="hidden">
+            <div class="mt-6 flex flex-col gap-2">
+              <label for="robots-paste" class="text-sm font-bold text-sand-100">
+                Paste your robots.txt contents
+              </label>
+              <textarea
+                id="robots-paste"
+                name="paste"
+                rows="10"
+                spellcheck="false"
+                placeholder="User-agent: *&#10;Allow: /&#10;&#10;User-agent: GPTBot&#10;Disallow: /"
+                class="w-full resize-y rounded-xl border border-ink-600 bg-ink-900 px-4 py-3 font-mono text-[13px] leading-relaxed text-sand-100 placeholder:text-sand-500 focus:border-mint-500 focus:outline-none"
+              ></textarea>
+              <p class="text-xs text-sand-500">
+                Parsed 100% in your browser — nothing is sent anywhere.
+              </p>
+              <button
+                type="submit"
+                class="shrink-0 self-start rounded-xl bg-mint-500 px-6 py-2.5 text-sm font-bold text-ink-950 transition-colors hover:bg-mint-400"
+              >
+                Analyze pasted robots.txt
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <button
+          type="button"
+          id="robots-mode-toggle"
+          class="mt-5 rounded-lg border border-ink-600 px-3.5 py-2 text-xs font-semibold text-sand-300 transition-colors hover:border-mint-500/40"
+        >
+          📋 Paste robots.txt instead
+        </button>
+
+        <!-- Loading / error / results -->
+        <div id="robots-status" class="mt-6" aria-live="polite"></div>
+        <div id="robots-results" class="mt-6 hidden"></div>
+      </div>
+    </section>
+
+    <!-- Crawler reference: semantic comparison table (same DB the checker runs on) -->
+    <section id="crawlers" class="mx-auto max-w-7xl scroll-mt-20 px-4 py-16 sm:px-6 lg:px-8">
+      <p class="text-xs font-semibold uppercase tracking-widest text-mint-400">LLM bot reference</p>
+      <h2 class="mt-2 max-w-3xl text-balance text-2xl font-bold tracking-tight text-sand-100 sm:text-3xl">
+        Check AI Crawler Access for Top LLM Bots
+      </h2>
+      <p class="mt-3 max-w-3xl text-sm leading-relaxed text-sand-400">
+        <span class="font-semibold text-sand-100">Short answer:</span> these nine user-agent tokens
+        decide whether SearchGPT, Perplexity, Bing AI, GPT, Claude and the training crawlers behind
+        them can read your site — allow the citation bots below to stay citable, and choose your
+        training policy per crawler. The table mirrors exactly what the checker tests, so reference
+        and results always agree.
+      </p>
+      <div class="mt-6 overflow-x-auto rounded-2xl border border-ink-700 bg-ink-850">
+        <table class="w-full min-w-[720px] border-collapse text-left text-sm">
+          <caption class="sr-only">AI user-agent tokens, their role in AI search and recommended robots.txt rules</caption>
+          <thead>
+            <tr class="border-b border-ink-700 text-[11px] uppercase tracking-widest text-sand-500">
+              <th scope="col" class="px-4 py-3 font-semibold sm:px-5">AI User-Agent</th>
+              <th scope="col" class="px-4 py-3 font-semibold sm:px-5">Class</th>
+              <th scope="col" class="px-4 py-3 font-semibold sm:px-5">What it does</th>
+              <th scope="col" class="px-4 py-3 font-semibold sm:px-5">Suggested robots.txt config</th>
+            </tr>
+          </thead>
+          <tbody>
+            {AI_BOTS.map((b) => (
+              <tr class="border-b border-ink-700/60 last:border-b-0 align-top">
+                <td class="px-4 py-4 sm:px-5">
+                  <span class="block font-bold text-sand-100">{b.name}</span>
+                  <span class="block text-xs text-sand-500">{b.vendor}</span>
+                  <code class="mt-1 inline-block rounded bg-ink-800 px-1.5 py-0.5 font-mono text-[11px] text-mint-300">{primaryToken(b)}</code>
+                </td>
+                <td class="px-4 py-4 text-xs font-semibold text-sand-300 sm:px-5">{CATEGORY_LABELS[b.category]}</td>
+                <td class="px-4 py-4 text-[13px] leading-relaxed text-sand-400 sm:px-5">{b.blurb}</td>
+                <td class="px-4 py-4 sm:px-5">
+                  <code class="font-mono text-xs leading-relaxed text-sand-300">{SUGGESTED_RULES[b.id]}</code>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-3 text-xs text-sand-500">
+        Suggested configs are GEO starting points — the snippet generator below turns your choice
+        into copy-paste rules. Blocking training crawlers does not affect citation crawlers, and
+        vice versa.
+      </p>
+    </section>
+
+    <!-- Long-form GEO explainer -->
+    <section id="why" class="mx-auto max-w-7xl scroll-mt-20 px-4 pb-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest text-mint-400">Why it matters</p>
+          <h2 class="mt-2 text-balance text-2xl font-bold tracking-tight text-sand-100 sm:text-3xl">
+            Why AI Crawlers (GPTBot, ClaudeBot, PerplexityBot) Matter for GEO
+          </h2>
+          <div class="mt-4 space-y-4 text-sm leading-relaxed text-sand-400">
+            <p>
+              <span class="font-semibold text-sand-100">Short answer:</span> a crawler that cannot read
+              your site cannot cite it — robots.txt is the first gate of GEO, and every AI answer
+              engine sits behind one of the user-agent tokens above.
+            </p>
+            <p>
+              When SearchGPT, Perplexity or Claude answers a question, the crawler has to
+              <em>read your page before it can cite it</em>. A blanket{' '}
+              <code class="text-mint-300">Disallow: /</code> on an AI crawler makes your site
+              effectively invisible to that product — no citation, no referral traffic, no brand
+              mentions. This is why GEO audits start with robots.txt rather than metadata.
+            </p>
+            <p>
+              An empty or missing robots.txt means <em>allow by default</em> — but in practice that is
+              fragile. AI vendors are increasingly conservative about crawling sites that never send
+              an explicit signal, and your own wildcard rules from a pre-AI era may quietly block every
+              crawler on this list. Explicit per-crawler rules turn an accident into a decision.
+            </p>
+            <p>
+              robots.txt is only one layer: <code class="text-mint-300">noai</code> /
+              <code class="text-mint-300">noimageai</code> meta tags protect individual pages, and a
+              well-formed <code class="text-mint-300">sitemap.xml</code> tells answer engines which
+              URLs matter most. Check the robots layer first — everything else is wasted if the
+              crawler never gets in.
+            </p>
+          </div>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest text-mint-400">How it works</p>
+          <h2 class="mt-2 text-2xl font-bold tracking-tight text-sand-100 sm:text-3xl">
+            Three Steps, One Verdict Per Crawler
+          </h2>
+          <ol class="mt-4 space-y-4">
+            <li class="rounded-2xl border border-ink-700 bg-ink-850 p-5">
+              <p class="text-sm font-bold text-sand-100"><span class="text-mint-400">1.</span> Enter a domain</p>
+              <p class="mt-1.5 text-[13px] leading-relaxed text-sand-400">
+                The AIGEOKit edge proxy fetches <code class="text-sand-300">robots.txt</code> for you —
+                browsers cannot read third-party robots.txt files directly due to CORS.
+              </p>
+            </li>
+            <li class="rounded-2xl border border-ink-700 bg-ink-850 p-5">
+              <p class="text-sm font-bold text-sand-100"><span class="text-mint-400">2.</span> Rules are parsed</p>
+              <p class="mt-1.5 text-[13px] leading-relaxed text-sand-400">
+                User-agent groups, wildcards (<code class="text-sand-300">*</code>,
+                <code class="text-sand-300">$</code>) and Allow/Disallow precedence are evaluated the
+                way Googlebot evaluates them (RFC&nbsp;9309), per AI crawler token.
+              </p>
+            </li>
+            <li class="rounded-2xl border border-ink-700 bg-ink-850 p-5">
+              <p class="text-sm font-bold text-sand-100"><span class="text-mint-400">3.</span> Verdicts and a fix</p>
+              <p class="mt-1.5 text-[13px] leading-relaxed text-sand-400">
+                Each crawler gets an Allowed / Blocked / Default badge with the rule that decides,
+                plus a ready-to-paste block that makes your AI access explicit.
+              </p>
+            </li>
+          </ol>
+          <p class="mt-4 rounded-xl border border-ink-700 bg-ink-850/60 p-4 text-xs leading-relaxed text-sand-500">
+            🔒 <span class="font-semibold text-sand-300">Privacy:</span> robots.txt is public data and the
+            proxy stores nothing. In paste mode nothing leaves your browser at all.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ (accordion; content mirrors the FAQPage JSON-LD one-to-one) -->
+    <section id="faq" class="mx-auto max-w-4xl scroll-mt-20 px-4 pb-24 sm:px-6 lg:px-8">
+      <div class="mx-auto mb-10 max-w-2xl text-center">
+        <p class="text-xs font-semibold uppercase tracking-widest text-mint-400">FAQ</p>
+        <h2 class="mt-2 text-3xl font-bold tracking-tight text-sand-100 sm:text-4xl">
+          Robots.txt &amp; AI Crawlers, Explained
+        </h2>
+      </div>
+      <div class="robots-faq space-y-3">
+        {faqs.map((f, i) => (
+          <details
+            open={i === 0}
+            class="group rounded-2xl border border-ink-700 bg-ink-850 transition-colors open:border-mint-500/30"
+          >
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-4 [&::-webkit-details-marker]:hidden">
+              <span class="text-[15px] font-bold text-sand-100">{f.q}</span>
+              <span aria-hidden="true" class="h-4 w-4 shrink-0 text-sand-500 transition-transform duration-200 group-open:rotate-180">
+                <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.06l3.71-3.83a.75.75 0 1 1 1.08 1.04l-4.25 4.39a.75.75 0 0 1-1.08 0L5.21 8.27a.75.75 0 0 1 .02-1.06z" clip-rule="evenodd"/></svg>
+              </span>
+            </summary>
+            <div class="border-t border-ink-700/70 px-6 pb-5 pt-3">
+              <p class="text-sm leading-relaxed text-sand-400">{f.a}</p>
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <!-- Cross-links & product loop: recommended next steps -->
+    <section class="mx-auto max-w-7xl scroll-mt-20 px-4 pb-24 pt-2 sm:px-6 lg:px-8">
+      <p class="text-xs font-semibold uppercase tracking-widest text-mint-400">Next steps</p>
+      <h2 class="mt-2 text-2xl font-bold tracking-tight text-sand-100 sm:text-3xl">
+        Keep Optimizing for AI Search
+      </h2>
+      <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+        <!-- Live: schema generator -->
+        <div class="flex flex-col rounded-2xl border border-ink-700 bg-ink-850 p-6">
+          <span class="inline-flex w-fit items-center gap-1.5 rounded-full border border-mint-500/30 bg-mint-500/10 px-2.5 py-1 text-[11px] font-bold text-mint-300">
+            <span class="relative flex h-1.5 w-1.5"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-mint-400 opacity-60"></span><span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-mint-400"></span></span>
+            Free tool
+          </span>
+          <h3 class="mt-3 text-[15px] font-bold text-sand-100">JSON-LD Schema Generator &amp; GEO Checklist</h3>
+          <p class="mt-1.5 flex-1 text-[13px] leading-relaxed text-sand-500">
+            Crawler access is step one. Generate Article, FAQ and Organization schema with a live GEO
+            Readiness score.
+          </p>
+          <a href="/tools/schema-generator/" class="mt-4 text-xs font-bold text-mint-400 transition-colors hover:text-mint-300">
+            Open Schema Generator →
+          </a>
+        </div>
+        <!-- Coming soon: llm.txt builder -->
+        <div class="flex flex-col rounded-2xl border border-ink-700 bg-ink-850 p-6">
+          <span class="inline-flex w-fit items-center rounded-full border border-ink-600 px-2.5 py-1 text-[11px] font-semibold text-sand-500">
+            Coming soon
+          </span>
+          <h3 class="mt-3 text-[15px] font-bold text-sand-100">llm.txt File Builder</h3>
+          <p class="mt-1.5 flex-1 text-[13px] leading-relaxed text-sand-500">
+            Need structured markdown for LLMs? Try our llm.txt File Builder to feed models a clear,
+            curated view of your site.
+          </p>
+          <a href="/tools/#tools" class="mt-4 text-xs font-bold text-mint-400 transition-colors hover:text-mint-300">
+            Browse all tools →
+          </a>
+        </div>
+        <!-- Coming soon: GEO citation analyzer -->
+        <div class="flex flex-col rounded-2xl border border-ink-700 bg-ink-850 p-6">
+          <span class="inline-flex w-fit items-center rounded-full border border-ink-600 px-2.5 py-1 text-[11px] font-semibold text-sand-500">
+            Coming soon
+          </span>
+          <h3 class="mt-3 text-[15px] font-bold text-sand-100">GEO Citation Analyzer</h3>
+          <p class="mt-1.5 flex-1 text-[13px] leading-relaxed text-sand-500">
+            Want to check if AI can extract your content? Run a GEO Citation Analysis to see how
+            answer engines parse and attribute your pages.
+          </p>
+          <a href="/tools/#tools" class="mt-4 text-xs font-bold text-mint-400 transition-colors hover:text-mint-300">
+            Browse all tools →
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script>
+    import '../../lib/robotsApp.ts';
+  </script>
+</Layout>
