@@ -1,0 +1,10 @@
+# AIGEOKit
+
+> Free, privacy-first Generative Engine Optimization (GEO) tools running 100% client-side.
+
+## Core Tools
+
+- [/tools/llm-txt-builder/](https://www.aigeokit.com/tools/llm-txt-builder/): Free online llms.txt and llms-full.txt generator & validator.
+- [/tools/ai-robots-txt-checker/](https://www.aigeokit.com/tools/ai-robots-txt-checker/): Check if GPTBot, PerplexityBot, ClaudeBot, and OAI-SearchBot are blocked.
+- [/tools/schema-generator/](https://www.aigeokit.com/tools/schema-generator/): Generate JSON-LD structured data with GEO Readiness score.
+- [/tools/](https://www.aigeokit.com/tools/): Complete catalog of free GEO webmaster tools.
