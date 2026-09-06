@@ -1,0 +1,512 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+const PAGE_URL = 'https://www.aigeokit.com/tools/llm-txt-builder/';
+const title = 'Free llms.txt Generator & Validator | AIGEOKit';
+const description =
+  'Create and validate standard /llms.txt and /llms-full.txt files in seconds. 100% private, client-side, and free tool to boost your website visibility in AI search engines.';
+const keywords =
+  'llms.txt generator, how to create llms.txt, llms.txt validator, llms-full.txt, llms.txt format, llms.txt standard, llms.txt for AI search, GEO llms.txt';
+
+const faqs = [
+  {
+    q: 'What is an llms.txt file?',
+    a: 'llms.txt is an open, proposed standard — a plain Markdown file served at https://yoursite.com/llms.txt — that gives AI models a concise, human-curated index of a website. It starts with the site name as an H1 title, a one-line blockquote summary, and then the links that matter most. Where sitemap.xml lists every URL for traditional search crawlers, llms.txt is written for the LLM crawlers behind ChatGPT, Perplexity, Claude and similar answer engines, so they can understand what your site is about before they fetch and cite it. The convention is documented at llmstxt.org.',
+  },
+  {
+    q: 'How to create llms.txt for my website?',
+    a: 'Three steps: (1) enter your site name and a one-line summary — they become the # title and the > blockquote; (2) add your pages, either manually or by importing your XML sitemap (paste the XML, or give the sitemap URL and this tool fetches it through AIGEOKit’s first-party proxy); (3) hit Copy Markdown and save the result as a file named llms.txt. Then run your file through the validator below to confirm the structure is standard before you upload it. If your site has more than roughly 20 links, add the optional [llms-full.txt](…) link to keep the short file scannable.',
+  },
+  {
+    q: 'How do I deploy llms.txt on my site?',
+    a: 'Upload the file to the root of your domain so it is publicly reachable at https://yoursite.com/llms.txt — no login, no bot protection. Any static host works: Netlify, Vercel, Cloudflare Pages, GitHub Pages, an nginx webroot or a CDN. Serve it as UTF-8 text (text/plain is fine), update it whenever your site structure changes — new sections, retired products, renamed pages — and re-run the validator after every change. On WordPress, place the file in the site root or serve /llms.txt through a small rewrite rule.',
+  },
+  {
+    q: 'What are the benefits of llms.txt for AI Search and GEO?',
+    a: 'AI answer engines can only cite what their crawlers can find and parse. A clean llms.txt gives them a curated map instead of the raw crawl frontier: your best pages, in the order you prefer, with a summary you control. That raises the chance an answer engine picks your page as a source — and for generative engine optimization (GEO), llms.txt complements robots.txt: robots.txt tells crawlers what is allowed (or not), llms.txt tells them what is worth reading. It is especially valuable for JavaScript-heavy or sprawling sites where automatic extraction is expensive or noisy.',
+  },
+  {
+    q: 'What is the difference between llms.txt and llms-full.txt?',
+    a: 'Both are Markdown files from the same proposal family. llms.txt is the short, curated index — title, summary and the key links — compact enough for an LLM to consume quickly. llms-full.txt is an optional sibling that can hold more complete information when you have a lot to share. In practice, most sites only need a good llms.txt; the builder adds an optional llms-full.txt link field and suggests it automatically once your link list grows past ~20 entries.',
+  },
+  {
+    q: 'Does llms.txt affect Google rankings?',
+    a: 'No — Google and Bing read sitemap.xml and robots.txt, not llms.txt, so the file does not directly change traditional rankings. Its audience is LLM-based discovery: ChatGPT, Perplexity, Claude and the growing set of AI crawlers that follow the llmstxt.org convention. Publishing it is harmless for crawlers that ignore it, and it is increasingly a free signal for AI search visibility, which is exactly where GEO focuses.',
+  },
+  {
+    q: 'Is my sitemap or site data sent anywhere?',
+    a: 'No third party ever sees it. The generator, preview and validator all run 100% in your browser. Pasting sitemap XML is parsed locally with zero network traffic. If you paste a sitemap URL instead, it is fetched only by AIGEOKit’s own edge function — the same first-party posture as our Robots.txt Checker — and nothing is logged or stored.',
+  },
+];
+
+// Structured Data (JSON-LD for GEO/SEO)
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'AIGEOKit — llms.txt Generator & Validator',
+    url: PAGE_URL,
+    description,
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'AIGEOKit',
+      url: 'https://www.aigeokit.com/',
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://www.aigeokit.com/',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Tools',
+        item: 'https://www.aigeokit.com/tools/',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: 'Free llms.txt Generator & Validator',
+        item: PAGE_URL,
+      },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.a,
+      },
+    })),
+  },
+];
+
+const chips = [
+  { icon: '📄', text: 'Standard /llms.txt & /llms-full.txt output' },
+  { icon: '🧭', text: 'Import pages from your XML sitemap' },
+  { icon: '🛡️', text: 'Syntax validator with fix suggestions' },
+  { icon: '🔒', text: 'Free forever · 100% client-side' },
+];
+---
+
+<Layout title={title} description={description} keywords={keywords} canonical={PAGE_URL} jsonLd={jsonLd}>
+  <Header />
+
+  <!-- Tool landing strip -->
+  <section class="relative overflow-hidden">
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+      <div class="absolute -top-24 left-1/2 h-[320px] w-[720px] -translate-x-1/2 rounded-full bg-mint-500/10 blur-[110px]"></div>
+    </div>
+    <div class="relative mx-auto max-w-7xl px-4 pb-6 pt-10 sm:px-6 lg:px-8">
+      <!-- Breadcrumb: Home → Tools → llms.txt Builder -->
+      <nav aria-label="Breadcrumb" class="text-xs text-sand-500">
+        <ol class="flex flex-wrap items-center gap-1.5">
+          <li><a href="/" class="font-medium transition-colors hover:text-mint-300">Home</a></li>
+          <li aria-hidden="true" class="text-sand-600">/</li>
+          <li><a href="/tools/" class="font-medium transition-colors hover:text-mint-300">Tools</a></li>
+          <li aria-hidden="true" class="text-sand-600">/</li>
+          <li aria-current="page" class="font-semibold text-sand-300">llms.txt Builder</li>
+        </ol>
+      </nav>
+      <h1 class="mt-4 max-w-3xl text-balance text-3xl font-extrabold leading-tight tracking-tight text-sand-100 sm:text-4xl">
+        Free Online llms.txt <span class="text-mint-400">Generator &amp; Validator</span>
+      </h1>
+      <p class="mt-3 max-w-2xl text-pretty text-[15px] leading-relaxed text-sand-400">
+        Generate a standard <code class="text-mint-300">/llms.txt</code> file for AI search engines in
+        seconds — or paste an existing one to check its structure. This free llms.txt generator runs
+        100% in your browser: nothing you type ever leaves your device.
+      </p>
+      <ul class="mt-6 flex flex-wrap gap-2">
+        {chips.map((c) => (
+          <li class="flex items-center gap-1.5 rounded-full border border-ink-700 bg-ink-850/70 px-3 py-1.5 text-[11px] font-medium text-sand-300">
+            <span aria-hidden="true">{c.icon}</span>{c.text}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <main>
+    <!-- ============ Builder: form + live preview ============ -->
+    <section id="builder" class="mx-auto max-w-7xl scroll-mt-20 px-4 pt-10 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
+        <!-- Form card -->
+        <form id="llms-form" novalidate class="lg:col-span-3">
+          <div class="rounded-2xl border border-ink-700 bg-ink-850 p-6 sm:p-7">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 class="text-lg font-bold tracking-tight text-sand-100">1 · Describe your site</h2>
+                <p class="mt-1 text-xs leading-relaxed text-sand-500">
+                  These become the <code class="text-sand-300"># Title</code> and{' '}
+                  <code class="text-sand-300">&gt; Summary</code> lines of llms.txt.
+                </p>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <button type="button" id="llms-load-example"
+                        class="rounded-lg border border-ink-600 px-3.5 py-2 text-xs font-semibold text-sand-300 transition-colors hover:border-mint-500/40 hover:text-mint-300">
+                  ✨ Load example
+                </button>
+                <button type="button" id="llms-clear"
+                        class="rounded-lg border border-ink-600 px-3.5 py-2 text-xs font-semibold text-sand-300 transition-colors hover:border-mint-500/40 hover:text-mint-300">
+                  Clear
+                </button>
+              </div>
+            </div>
+
+            <div class="mt-6 space-y-5">
+              <div class="flex flex-col gap-2">
+                <label for="llms-site-name" class="text-sm font-bold text-sand-100">Site name *</label>
+                <input id="llms-site-name" type="text" autocomplete="off" spellcheck="false"
+                       placeholder="Example Inc."
+                       class="w-full rounded-xl border border-ink-600 bg-ink-900 px-4 py-2.5 text-sm text-sand-100 placeholder:text-sand-500 focus:border-mint-500 focus:outline-none" />
+              </div>
+              <div class="flex flex-col gap-2">
+                <label for="llms-summary" class="text-sm font-bold text-sand-100">Site summary *</label>
+                <textarea id="llms-summary" rows="3" spellcheck="true"
+                          placeholder="A one-to-two sentence overview of what the website contains and who it is for — LLMs read this before any link."
+                          class="w-full resize-y rounded-xl border border-ink-600 bg-ink-900 px-4 py-3 text-sm leading-relaxed text-sand-100 placeholder:text-sand-500 focus:border-mint-500 focus:outline-none"></textarea>
+              </div>
+              <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                <div class="flex flex-col gap-2">
+                  <label for="llms-llmsfull" class="text-sm font-bold text-sand-100">
+                    llms-full.txt link <span class="font-normal text-sand-500">(optional)</span>
+                  </label>
+                  <input id="llms-llmsfull" type="text" inputmode="url" autocomplete="off" spellcheck="false"
+                         placeholder="https://example.com/llms-full.txt"
+                         class="w-full rounded-xl border border-ink-600 bg-ink-900 px-4 py-2.5 font-mono text-xs text-sand-100 placeholder:text-sand-500 focus:border-mint-500 focus:outline-none" />
+                </div>
+                <div class="flex flex-col gap-2">
+                  <label for="llms-details" class="text-sm font-bold text-sand-100">
+                    Extra Markdown <span class="font-normal text-sand-500">(optional)</span>
+                  </label>
+                  <textarea id="llms-details" rows="2" spellcheck="false"
+                            placeholder="## Sections&#10;Optional details or H2 guidance to append."
+                            class="w-full resize-y rounded-xl border border-ink-600 bg-ink-900 px-4 py-2.5 font-mono text-xs leading-relaxed text-sand-100 placeholder:text-sand-500 focus:border-mint-500 focus:outline-none"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pages -->
+            <div class="mt-8 border-t border-ink-700/70 pt-6">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <p class="text-sm font-bold text-sand-100">2 · Pages to list</p>
+                <p class="text-[11px] text-sand-500">Format: <code class="text-sand-400">- [Title](URL): description</code></p>
+              </div>
+              <div id="llms-page-rows" class="mt-4 space-y-3"></div>
+              <button type="button" id="llms-add-page"
+                      class="rounded-lg border border-dashed border-ink-600 px-4 py-2.5 text-xs font-semibold text-mint-300 transition-colors hover:border-mint-500/60 hover:text-mint-200">
+                + Add page manually
+              </button>
+            </div>
+
+            <!-- Sitemap import -->
+            <div class="mt-7 border-t border-ink-700/70 pt-6">
+              <p class="text-sm font-bold text-sand-100">3 · Import from XML sitemap <span class="font-normal text-sand-500">(optional)</span></p>
+              <p class="mt-1 text-xs leading-relaxed text-sand-500">
+                Paste your sitemap XML to parse it 100% locally, or paste its URL to fetch it through
+                AIGEOKit’s own proxy — never a third party. Imported pages are appended below.
+              </p>
+              <div class="mt-3 flex flex-col gap-3">
+                <textarea id="llms-sitemap-paste" rows="4" spellcheck="false"
+                          placeholder="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;&gt;…"
+                          class="w-full resize-y rounded-xl border border-ink-600 bg-ink-900 px-4 py-3 font-mono text-xs leading-relaxed text-sand-100 placeholder:text-sand-500 focus:border-mint-500 focus:outline-none"></textarea>
+                <div class="flex flex-col gap-2 sm:flex-row">
+                  <button type="button" id="llms-import-paste"
+                          class="shrink-0 rounded-xl bg-mint-500 px-5 py-2.5 text-xs font-bold text-ink-950 transition-colors hover:bg-mint-400">
+                    Import pasted XML
+                  </button>
+                  <input id="llms-sitemap-url" type="text" inputmode="url" autocomplete="off" spellcheck="false"
+                         placeholder="https://example.com/sitemap.xml"
+                         class="min-w-0 flex-1 rounded-xl border border-ink-600 bg-ink-900 px-4 py-2.5 font-mono text-xs text-sand-100 placeholder:text-sand-500 focus:border-mint-500 focus:outline-none" />
+                  <button type="button" id="llms-import-url"
+                          class="shrink-0 rounded-xl border border-ink-600 px-5 py-2.5 text-xs font-semibold text-sand-200 transition-colors hover:border-mint-500/50 hover:text-mint-300">
+                    Fetch sitemap URL
+                  </button>
+                </div>
+              </div>
+              <p id="llms-import-status" class="mt-2.5 min-h-[1rem] text-xs text-sand-500" aria-live="polite"></p>
+            </div>
+          </div>
+        </form>
+
+        <!-- Live preview card -->
+        <aside class="lg:col-span-2">
+          <div class="sticky top-24 flex h-full flex-col rounded-2xl border border-ink-700 bg-ink-850 p-6 sm:p-7">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h2 class="text-lg font-bold tracking-tight text-sand-100">Live preview</h2>
+              <p id="llms-preview-meta" class="font-mono text-[10px] text-sand-500">0 chars · 0 lines</p>
+            </div>
+            <p class="mt-1 text-xs leading-relaxed text-sand-500">
+              Your generated <code class="text-sand-300">llms.txt</code>, updated as you type.
+            </p>
+            <div id="llms-preview-issues" class="mt-3 space-y-2" aria-live="polite"></div>
+            <pre id="llms-preview-pre"
+                 class="mt-3 min-h-[260px] flex-1 overflow-auto whitespace-pre-wrap break-words rounded-xl border border-ink-700 bg-ink-950 p-4 font-mono text-[12px] leading-relaxed text-sand-300"># &#10;&gt; &#10;</pre>
+            <div class="mt-4 flex flex-col gap-2.5 sm:flex-row">
+              <button type="button" id="llms-copy"
+                      class="flex-1 rounded-xl bg-mint-500 px-5 py-2.5 text-sm font-bold text-ink-950 transition-colors hover:bg-mint-400">
+                Copy Markdown
+              </button>
+              <button type="button" id="llms-download"
+                      class="flex-1 rounded-xl border border-mint-500/40 bg-mint-500/10 px-5 py-2.5 text-sm font-bold text-mint-300 transition-colors hover:bg-mint-500/20">
+                ⬇ Download llms.txt
+              </button>
+            </div>
+            <p class="mt-2.5 text-center text-[11px] leading-relaxed text-sand-500">
+              Save the file and upload it to <code class="text-sand-400">https://yoursite.com/llms.txt</code>,
+              then validate it below.
+            </p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============ Validator ============ -->
+    <section id="validator" class="mx-auto max-w-7xl scroll-mt-20 px-4 pt-16 sm:px-6 lg:px-8">
+      <div class="text-center">
+        <p class="text-xs font-semibold uppercase tracking-widest text-mint-400">Validator</p>
+        <h2 class="mx-auto mt-2 max-w-2xl text-balance text-2xl font-bold tracking-tight text-sand-100 sm:text-3xl">
+          llms.txt Syntax Validator
+        </h2>
+        <p class="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-sand-400">
+          Paste an existing <code class="text-sand-300">llms.txt</code> to check it against the standard:
+          missing H1 title, missing blockquote summary, H2 structure, malformed links and duplicates —
+          each with a suggested fix. Runs entirely in your browser.
+        </p>
+      </div>
+      <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div class="rounded-2xl border border-ink-700 bg-ink-850 p-6">
+          <label for="llms-val-paste" class="text-sm font-bold text-sand-100">
+            Your llms.txt content
+          </label>
+          <textarea id="llms-val-paste" rows="16" spellcheck="false"
+                    placeholder="# Example&#10;&gt; A short description of the site.&#10;&#10;- [Homepage](https://example.com/): The main landing page.&#10;- [Pricing](https://example.com/pricing/): Plan pricing details."
+                    class="mt-3 w-full resize-y rounded-xl border border-ink-600 bg-ink-900 px-4 py-3 font-mono text-[12px] leading-relaxed text-sand-100 placeholder:text-sand-500 focus:border-mint-500 focus:outline-none"></textarea>
+          <button type="button" id="llms-val-run"
+                  class="mt-4 rounded-xl bg-mint-500 px-6 py-2.5 text-sm font-bold text-ink-950 transition-colors hover:bg-mint-400">
+            Validate llms.txt
+          </button>
+        </div>
+        <div class="rounded-2xl border border-ink-700 bg-ink-850 p-6">
+          <p class="text-sm font-bold text-sand-100">Results</p>
+          <div id="llms-val-out" class="mt-4 space-y-3 text-sm" aria-live="polite">
+            <p class="text-xs leading-relaxed text-sand-500">
+              Structure summary and issues will appear here after validation.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Long-form GEO explainer ============ -->
+    <section id="what" class="mx-auto max-w-7xl scroll-mt-20 px-4 pb-4 pt-16 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest text-mint-400">Why it matters</p>
+          <h2 class="mt-2 text-balance text-2xl font-bold tracking-tight text-sand-100 sm:text-3xl">
+            What Is llms.txt — and Why AI Answer Engines Need It
+          </h2>
+          <div class="mt-4 space-y-4 text-sm leading-relaxed text-sand-400">
+            <p>
+              <span class="font-semibold text-sand-100">Short answer:</span> llms.txt is a one-file
+              Markdown index that tells LLM crawlers — the robots behind ChatGPT search, Perplexity and
+              Claude answers — what your site is about and which pages matter, so they can fetch and
+              cite them instead of guessing from a raw crawl.
+            </p>
+            <p>
+              When an AI answer engine researches a question, its crawler has to
+              <em>read your page before it can cite it</em>. A sprawling site gives the crawler
+              thousands of pages of near-duplicate noise; an <code class="text-mint-300">llms.txt</code>{' '}
+              gives it your editorial signal: the site name, the one-paragraph summary, and the links
+              worth reading — in the order you choose. This is the same audience as GEO itself:
+              answer engines, not just search indexes.
+            </p>
+            <p>
+              The format is intentionally simple — an H1 title, a blockquote summary, optional H2
+              sections and markdown links — which is why this llms.txt generator can produce a
+              compliant file in seconds and the validator below can check one just as fast. No schema
+              tree, no namespace, no build step.
+            </p>
+          </div>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest text-mint-400">How it works</p>
+          <h2 class="mt-2 text-2xl font-bold tracking-tight text-sand-100 sm:text-3xl">
+            How to Create llms.txt in Three Steps
+          </h2>
+          <ol class="mt-4 space-y-4">
+            <li class="rounded-2xl border border-ink-700 bg-ink-850 p-5">
+              <p class="text-sm font-bold text-sand-100"><span class="text-mint-400">1.</span> Write the header</p>
+              <p class="mt-1.5 text-[13px] leading-relaxed text-sand-400">
+                Site name as <code class="text-sand-300"># Title</code>, then a{' '}
+                <code class="text-sand-300">&gt; summary</code> — two lines that tell an LLM who you
+                are before it reads a single link.
+              </p>
+            </li>
+            <li class="rounded-2xl border border-ink-700 bg-ink-850 p-5">
+              <p class="text-sm font-bold text-sand-100"><span class="text-mint-400">2.</span> Curate the links</p>
+              <p class="mt-1.5 text-[13px] leading-relaxed text-sand-400">
+                Import your XML sitemap and delete the noise, or add links by hand. Keep entries in
+                <code class="text-sand-300">- [Page Title](URL): description</code> form — described
+                links give models context, order gives them priorities.
+              </p>
+            </li>
+            <li class="rounded-2xl border border-ink-700 bg-ink-850 p-5">
+              <p class="text-sm font-bold text-sand-100"><span class="text-mint-400">3.</span> Deploy &amp; validate</p>
+              <p class="mt-1.5 text-[13px] leading-relaxed text-sand-400">
+                Download <code class="text-sand-300">llms.txt</code>, upload it to your domain root,
+                then run this page’s validator whenever the file changes.
+              </p>
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Reference layout -->
+      <div class="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div class="rounded-2xl border border-ink-700 bg-ink-850 p-6">
+          <p class="text-sm font-bold text-sand-100">The standard layout, at a glance</p>
+          <pre class="mt-3 overflow-auto whitespace-pre-wrap rounded-xl border border-ink-700 bg-ink-950 p-4 font-mono text-[11px] leading-relaxed text-sand-300"># Example.com
+
+> Example is the leading platform for example widgets,
+> trusted by 2,000 teams worldwide.
+
+## Key pages
+
+- [Homepage](https://example.com/): Product overview and latest news
+- [Pricing](https://example.com/pricing/): Plans and billing details
+- [Documentation](https://docs.example.com/): API guides for developers
+
+[llms-full.txt](https://example.com/llms-full.txt)</pre>
+        </div>
+        <div class="rounded-2xl border border-ink-700 bg-ink-850 p-6">
+          <p class="text-sm font-bold text-sand-100">llms.txt vs sitemap.xml vs robots.txt</p>
+          <div class="mt-3 space-y-3">
+            <div class="flex items-start gap-3 rounded-xl border border-ink-700 bg-ink-900/60 p-3.5">
+              <code class="shrink-0 rounded bg-ink-800 px-1.5 py-0.5 font-mono text-[11px] text-mint-300">robots.txt</code>
+              <p class="text-xs leading-relaxed text-sand-400">Permissions — who may crawl, and what they may not. It never says what to read.</p>
+            </div>
+            <div class="flex items-start gap-3 rounded-xl border border-ink-700 bg-ink-900/60 p-3.5">
+              <code class="shrink-0 rounded bg-ink-800 px-1.5 py-0.5 font-mono text-[11px] text-mint-300">sitemap.xml</code>
+              <p class="text-xs leading-relaxed text-sand-400">Discovery for classic search engines — every URL, no editorial judgement.</p>
+            </div>
+            <div class="flex items-start gap-3 rounded-xl border border-ink-700 bg-ink-900/60 p-3.5">
+              <code class="shrink-0 rounded bg-ink-800 px-1.5 py-0.5 font-mono text-[11px] text-mint-300">llms.txt</code>
+              <p class="text-xs leading-relaxed text-sand-400">Context for LLM crawlers — a curated, summarized index written for models.</p>
+            </div>
+          </div>
+          <p class="mt-4 text-xs leading-relaxed text-sand-500">
+            🔒 <span class="font-semibold text-sand-300">Privacy:</span> all three formats here are public
+            site data, but this builder still keeps yours private — parsing happens in your browser, and
+            URL fetches go only through AIGEOKit’s own edge function.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ (accordion; content mirrors the FAQPage JSON-LD one-to-one) -->
+    <section id="faq" class="mx-auto max-w-4xl scroll-mt-20 px-4 pb-24 pt-20 sm:px-6 lg:px-8">
+      <div class="mx-auto mb-10 max-w-2xl text-center">
+        <p class="text-xs font-semibold uppercase tracking-widest text-mint-400">FAQ</p>
+        <h2 class="mt-2 text-3xl font-bold tracking-tight text-sand-100 sm:text-4xl">
+          llms.txt, Explained
+        </h2>
+      </div>
+      <div class="space-y-3">
+        {faqs.map((f, i) => (
+          <details
+            open={i === 0}
+            class="group rounded-2xl border border-ink-700 bg-ink-850 transition-colors open:border-mint-500/30"
+          >
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-4 [&::-webkit-details-marker]:hidden">
+              <span class="text-[15px] font-bold text-sand-100">{f.q}</span>
+              <span aria-hidden="true" class="h-4 w-4 shrink-0 text-sand-500 transition-transform duration-200 group-open:rotate-180">
+                <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.06l3.71-3.83a.75.75 0 1 1 1.08 1.04l-4.25 4.39a.75.75 0 0 1-1.08 0L5.21 8.27a.75.75 0 0 1 .02-1.06z" clip-rule="evenodd"/></svg>
+              </span>
+            </summary>
+            <div class="border-t border-ink-700/70 px-6 pb-5 pt-3">
+              <p class="text-sm leading-relaxed text-sand-400">{f.a}</p>
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <!-- Cross-links & product loop: recommended next steps -->
+    <section class="mx-auto max-w-7xl scroll-mt-20 px-4 pb-24 pt-2 sm:px-6 lg:px-8">
+      <p class="text-xs font-semibold uppercase tracking-widest text-mint-400">Next steps</p>
+      <h2 class="mt-2 text-2xl font-bold tracking-tight text-sand-100 sm:text-3xl">
+        Keep Optimizing for AI Search
+      </h2>
+      <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div class="flex flex-col rounded-2xl border border-ink-700 bg-ink-850 p-6">
+          <span class="inline-flex w-fit items-center gap-1.5 rounded-full border border-mint-500/30 bg-mint-500/10 px-2.5 py-1 text-[11px] font-bold text-mint-300">
+            <span class="relative flex h-1.5 w-1.5"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-mint-400 opacity-60"></span><span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-mint-400"></span></span>
+            Free tool
+          </span>
+          <h3 class="mt-3 text-[15px] font-bold text-sand-100">AI Robots.txt Checker</h3>
+          <p class="mt-1.5 flex-1 text-[13px] leading-relaxed text-sand-500">
+            llms.txt invites AI crawlers in — make sure robots.txt doesn’t block the door. Test
+            GPTBot, PerplexityBot and ClaudeBot access in one click.
+          </p>
+          <a href="/tools/ai-robots-txt-checker/" class="mt-4 text-xs font-bold text-mint-400 transition-colors hover:text-mint-300">
+            Open Robots.txt Checker →
+          </a>
+        </div>
+        <div class="flex flex-col rounded-2xl border border-ink-700 bg-ink-850 p-6">
+          <span class="inline-flex w-fit items-center gap-1.5 rounded-full border border-mint-500/30 bg-mint-500/10 px-2.5 py-1 text-[11px] font-bold text-mint-300">
+            <span class="relative flex h-1.5 w-1.5"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-mint-400 opacity-60"></span><span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-mint-400"></span></span>
+            Free tool
+          </span>
+          <h3 class="mt-3 text-[15px] font-bold text-sand-100">JSON-LD Schema Generator &amp; GEO Checklist</h3>
+          <p class="mt-1.5 flex-1 text-[13px] leading-relaxed text-sand-500">
+            Give answer engines structured proof of what your pages are — with a live GEO Readiness score.
+          </p>
+          <a href="/tools/schema-generator/" class="mt-4 text-xs font-bold text-mint-400 transition-colors hover:text-mint-300">
+            Open Schema Generator →
+          </a>
+        </div>
+        <!-- Coming soon: GEO citation analyzer -->
+        <div class="flex flex-col rounded-2xl border border-ink-700 bg-ink-850 p-6">
+          <span class="inline-flex w-fit items-center rounded-full border border-ink-600 px-2.5 py-1 text-[11px] font-semibold text-sand-500">
+            Coming soon
+          </span>
+          <h3 class="mt-3 text-[15px] font-bold text-sand-100">GEO Citation Analyzer</h3>
+          <p class="mt-1.5 flex-1 text-[13px] leading-relaxed text-sand-500">
+            Want to check if AI can extract your content? Run a GEO Citation Analysis to see how
+            answer engines parse and attribute your pages.
+          </p>
+          <a href="/tools/#tools" class="mt-4 text-xs font-bold text-mint-400 transition-colors hover:text-mint-300">
+            Browse all tools →
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script>
+    import '../../lib/llmsApp.ts';
+  </script>
+</Layout>

@@ -30,7 +30,12 @@ const jsonLd = {
       name: 'AI Robots.txt & Crawler Checker',
       url: 'https://www.aigeokit.com/tools/ai-robots-txt-checker/',
     },
-    { '@type': 'ListItem', position: 3, name: 'llm.txt File Builder' },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: 'Free llms.txt Generator & Validator',
+      url: 'https://www.aigeokit.com/tools/llm-txt-builder/',
+    },
     { '@type': 'ListItem', position: 4, name: 'GEO Citation Analyzer' },
   ],
 };
@@ -42,7 +47,7 @@ const faqs = [
   },
   {
     q: 'Does my content or data leave my device?',
-    a: 'No — generators run 100% client-side: your schema, scores and pasted content are computed locally and never uploaded, stored or tracked anywhere. The one exception is the Robots.txt Checker\'s URL mode, which fetches the site\'s public robots.txt through the AIGEOKit edge proxy (paste mode stays fully local).',
+    a: 'No — generators run 100% client-side: your schema, scores and pasted content are computed locally and never uploaded, stored or tracked anywhere. The only exceptions are the Robots.txt Checker\'s URL mode and the llms.txt Builder\'s sitemap-URL import, which fetch a site\'s public robots.txt or XML sitemap through AIGEOKit\'s own edge proxy (nothing is logged or stored, and paste modes stay fully local).',
   },
   {
     q: 'What does the GEO Readiness Checklist measure?',
@@ -75,7 +80,7 @@ const faqs = [
   </section>
 
   <main>
-    <!-- Tools Directory: 1 live + 3 coming soon -->
+    <!-- Tools Directory: 3 live + 1 coming soon -->
     <ToolGrid />
 
     <!-- FAQ -->

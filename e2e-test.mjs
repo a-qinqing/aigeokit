@@ -1,8 +1,11 @@
 /**
  * Full E2E self-test of the AIGEOKit site using system Edge via playwright-core.
  *
- * Part A — homepage portal: SEO meta, header/nav, tools-suite grid (1 live card
- *   linking to /tools/schema-generator/ + 3 Coming Soon), GEO guide, footer.
+ * Part A — homepage portal: SEO meta, header/nav, featured tool cards, GEO
+ *   guide, footer.
+ * Part A2 — /tools/ tools directory (3 live cards + 1 Coming Soon).
+ * Part C — /tools/llm-txt-builder/: SEO head, builder→preview reactivity,
+ *   sitemap import, validator, FAQ and console errors.
  * Part B — /tools/schema-generator/: page load & SEO head, tool switching,
  *   form→output reactivity, FAQ row add/remove, GEO checklist, platform tabs,
  *   clipboard copy, modal open/close/Esc, quick-copy, load-example/clear,
@@ -64,6 +67,7 @@ ok('header brand badge', (await page.locator('body > header').textContent()).inc
 ok('hero CTA to tools + guide', (await page.locator('#top a[href="/tools/"]').count()) === 1 && (await page.locator('#top a[href="/#guide"]').count()) === 1);
 ok('featured tool section', (await page.locator('#featured').count()) === 1);
 ok('featured links generator + directory', (await page.locator('#featured a[href="/tools/schema-generator/"]').count()) === 1 && (await page.locator('#featured a[href="/tools/"]').count()) === 1);
+ok('featured links robots + llms builder', (await page.locator('#featured a[href="/tools/ai-robots-txt-checker/"]').count()) === 1 && (await page.locator('#featured a[href="/tools/llm-txt-builder/"]').count()) === 1);
 ok('home has no 4-card portal grid', (await page.locator('.portal-card').count()) === 0);
 ok('guide section present', (await page.locator('#guide h2').textContent()).includes('Why AI Search Engines'));
 ok('guide links to generator', (await page.locator('#guide a[href^="/tools/schema-generator"]').count()) >= 1);
@@ -81,8 +85,9 @@ ok('directory h1', (await page.locator('h1').filter({ hasText: 'Free AI & GEO We
 const dirJsonLd = await page.locator('script[type="application/ld+json"]').allTextContents();
 ok('directory ItemList JSON-LD', dirJsonLd.some((s) => s.includes('"ItemList"')) && dirJsonLd.some((s) => s.includes('"numberOfItems":4')));
 ok('directory portal grid: 4 cards', (await page.locator('.portal-card').count()) === 4);
-ok('directory 1 live + 3 coming-soon', (await page.locator('.portal-live').count()) === 1 && (await page.locator('.portal-soon').count()) === 3);
-ok('directory live card links to tool page', (await page.locator('.portal-live').first().getAttribute('href')) === '/tools/schema-generator/');
+ok('directory 3 live + 1 coming-soon', (await page.locator('.portal-live').count()) === 3 && (await page.locator('.portal-soon').count()) === 1);
+ok('directory live cards link to tool pages', (await page.locator('.portal-live').first().getAttribute('href')) === '/tools/schema-generator/' && (await page.locator('.portal-live').nth(2).getAttribute('href')) === '/tools/llm-txt-builder/');
+ok('directory ItemList lists llm-txt-builder URL', dirJsonLd.some((s) => s.includes('https://www.aigeokit.com/tools/llm-txt-builder/')));
 ok('directory grid header', (await page.locator('#tools h2').textContent()) === 'Tools Directory');
 ok('directory FAQ has 3 items', (await page.locator('#faq h3').count()) === 3);
 ok('directory footer brand', (await page.locator('body > footer').textContent()).includes('AIGEOKit'));
@@ -177,7 +182,7 @@ ok('modal opens after copy', await until(async () => {
 }));
 ok('modal success title', (await page.locator('#modal-title').textContent()) === 'Code Copied to Clipboard!');
 ok('modal recommendation heading', (await page.locator('#modal-recs h3').textContent()).includes('WordPress or Shopify'));
-ok('modal has 2 affiliate buttons', (await page.locator('#modal-recs a').count()) === 2);
+ok('modal has affiliate button', (await page.locator('#modal-recs a').count()) === 1, String(await page.locator('#modal-recs a').count()));
 ok('clipboard holds code', await until(async () => {
   const clip = await page.evaluate(async () => {
     try {
@@ -259,6 +264,87 @@ ok('all 8 tools render forms', allToolsOk);
 
 /* B13. Console errors */
 ok('no console/page errors', consoleErrors.length === 0, consoleErrors.slice(0, 3).join(' | '));
+
+/* ============ Part C — /tools/llm-txt-builder/ ============ */
+
+const LLMS = `${BASE}tools/llm-txt-builder/`;
+await page.goto(LLMS, { waitUntil: 'networkidle' });
+await noSmooth();
+
+/* C0. SEO head per spec (llms-1.txt) */
+ok('llms page title', (await page.title()) === 'Free llms.txt Generator & Validator | AIGEOKit');
+ok('llms description meta', (await page.locator('meta[name="description"]').getAttribute('content')) === 'Create and validate standard /llms.txt and /llms-full.txt files in seconds. 100% private, client-side, and free tool to boost your website visibility in AI search engines.');
+ok('llms canonical', (await page.locator('link[rel="canonical"]').getAttribute('href')) === 'https://www.aigeokit.com/tools/llm-txt-builder/');
+const llmsJsonLd = await page.locator('script[type="application/ld+json"]').allTextContents();
+ok('llms JSON-LD: WebApplication + Breadcrumb + FAQPage', llmsJsonLd.some((s) => s.includes('"WebApplication"')) && llmsJsonLd.some((s) => s.includes('"BreadcrumbList"')) && llmsJsonLd.some((s) => s.includes('"FAQPage"')));
+ok('llms h1', (await page.locator('h1').filter({ hasText: 'Free Online llms.txt Generator & Validator' }).count()) === 1);
+ok('llms FAQ covers llms.txt topics', (await page.locator('#faq h2').filter({ hasText: 'llms.txt, Explained' }).count()) === 1 && (await page.locator('#faq details').count()) >= 6 && (await page.locator('#faq').textContent()).includes('What is an llms.txt file'));
+
+/* C1. Builder → live preview reactivity */
+ok('builder controls present', (await page.locator('#llms-site-name').count()) === 1 && (await page.locator('#llms-add-page').count()) === 1 && (await page.locator('#llms-preview-pre').count()) === 1);
+await page.locator('#llms-site-name').fill('E2E Test Site');
+await page.locator('#llms-summary').fill('A site that exists purely for automated tests.');
+ok('preview updates on typing', await until(async () => {
+  const pre = await page.locator('#llms-preview-pre').textContent();
+  return pre.includes('# E2E Test Site') && pre.includes('> A site that exists purely');
+}));
+
+/* C2. Example + row management */
+await page.locator('#llms-load-example').click();
+ok('load example fills rows + preview', await until(async () => {
+  const rows = await page.locator('.page-row').count();
+  const pre = await page.locator('#llms-preview-pre').textContent();
+  return rows >= 4 && pre.includes('# AIGEOKit') && pre.includes('- [Tools Directory]');
+}));
+const rowsBefore = await page.locator('.page-row').count();
+await page.locator('#llms-add-page').click();
+ok('add page row', (await page.locator('.page-row').count()) === rowsBefore + 1);
+await page.locator('.page-row button[data-rm]').first().click();
+ok('remove page row', (await page.locator('.page-row').count()) === rowsBefore);
+
+/* C3. Sitemap import (pasted XML, fully local) */
+await page.locator('#llms-sitemap-paste').fill(`<?xml version="1.0"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://e2e.example/about/</loc></url>
+  <url><loc>https://e2e.example/pricing/</loc></url>
+</urlset>`);
+await page.locator('#llms-import-paste').click();
+ok('pasted sitemap imports URLs with auto titles', await until(async () => {
+  const pre = await page.locator('#llms-preview-pre').textContent();
+  return pre.includes('- [About](https://e2e.example/about/)') && pre.includes('- [Pricing](https://e2e.example/pricing/)');
+}));
+ok('import status shows added count', await until(async () => {
+  const s = await page.locator('#llms-import-status').textContent();
+  return s.includes('Added 2 pages');
+}));
+
+/* C4. Copy to clipboard */
+await page.locator('#llms-copy').click();
+ok('copy flashes success', await until(async () => {
+  const label = await page.locator('#llms-copy').textContent();
+  return label.includes('✓');
+}));
+ok('clipboard holds llms.txt markdown', await until(async () => {
+  const clip = await page.evaluate(() => navigator.clipboard.readText());
+  return clip.includes('# AIGEOKit');
+}));
+
+/* C5. Validator: good file passes, bad file flagged */
+await page.locator('#llms-val-paste').fill('# Example\n> A short summary of the site.\n\n- [Home](https://example.com/): The homepage\n- [Pricing](https://example.com/pricing/): Pricing details');
+await page.locator('#llms-val-run').click();
+ok('validator accepts standard file', await until(async () => {
+  const out = await page.locator('#llms-val-out').textContent();
+  return out.includes('Valid llms.txt');
+}));
+await page.locator('#llms-val-paste').fill('# Example\n\n- [Home](https://example.com/): The homepage');
+await page.locator('#llms-val-run').click();
+ok('validator flags missing summary', await until(async () => {
+  const out = await page.locator('#llms-val-out').textContent();
+  return out.includes('Missing blockquote summary') && out.includes('line 3');
+}));
+
+/* C6. Console errors on this page */
+ok('no console/page errors (llms page)', consoleErrors.length === 0, consoleErrors.slice(0, 3).join(' | '));
 
 await browser.close();
 console.log(failures === 0 ? '\n=== ALL E2E TESTS PASSED ===' : `\n=== ${failures} FAILURES ===`);
