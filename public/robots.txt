@@ -1,5 +1,41 @@
 # AIGEOKit robots.txt
+# Explicitly allows the AI search, citation and training crawlers monitored
+# by the AIGEOKit Robots.txt Checker (aigeokit.com/tools/ai-robots-txt-checker).
+# No monitored bot inherits a wildcard rule, so the AI Crawlability Score
+# reflects an explicit, deliberate stance instead of "Allowed by default".
+
+# --- All crawlers ---
 User-agent: *
+Allow: /
+
+# --- AI search & citation crawlers ---
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# --- User-triggered browsing ---
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+# --- Model training crawlers (this site opts in) ---
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
 Allow: /
 
 Sitemap: https://www.aigeokit.com/sitemap.xml
