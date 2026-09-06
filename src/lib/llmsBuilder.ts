@@ -32,7 +32,14 @@ export interface LlmsState {
   details?: string;
   /** Optional /llms-full.txt link. */
   llmsFullUrl?: string;
+  /** Append the attribution comment at the bottom of the generated file.
+   *  Defaults to on unless explicitly set to false. */
+  credit?: boolean;
 }
+
+/** Attribution comment appended to generated files (opt-out via `credit: false`). */
+export const CREDIT_COMMENT =
+  '<!-- Generated with AIGEOKit (https://www.aigeokit.com/tools/llm-txt-builder/) -->';
 
 export type IssueSeverity = 'error' | 'warn' | 'suggestion';
 
@@ -75,7 +82,9 @@ export function buildLlmsTxt(state: LlmsState): string {
   const full = (state.llmsFullUrl ?? '').trim();
   if (full) parts.push(`[llms-full.txt](${full})`);
 
-  return parts.join('\n\n') + '\n';
+  let out = parts.join('\n\n') + '\n';
+  if (state.credit !== false) out += '\n' + CREDIT_COMMENT + '\n';
+  return out;
 }
 
 /** Issues that block or weaken a *generated* file (drives the live preview). */

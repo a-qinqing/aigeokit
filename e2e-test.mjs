@@ -282,6 +282,14 @@ ok('llms FAQ covers llms.txt topics', (await page.locator('#faq h2').filter({ ha
 
 /* C1. Builder → live preview reactivity */
 ok('builder controls present', (await page.locator('#llms-site-name').count()) === 1 && (await page.locator('#llms-add-page').count()) === 1 && (await page.locator('#llms-preview-pre').count()) === 1);
+ok('ux controls present (example sitemap / credit / live check / CTA)', (await page.locator('#llms-sitemap-example').count()) === 1 && (await page.locator('#llms-credit').count()) === 1 && (await page.locator('#llms-live-check').count()) === 1 && (await page.locator('#geo-cta').count()) === 1);
+ok('sitemap tabs default to paste mode', await page.locator('#llms-sm-panel-paste').isVisible() && !(await page.locator('#llms-sm-panel-url').isVisible()));
+await page.locator('#llms-sm-tab-url').click();
+ok('sitemap tab switches to URL mode', await until(async () => {
+  return (await page.locator('#llms-sm-panel-url').isVisible()) && !(await page.locator('#llms-sm-panel-paste').isVisible());
+}));
+await page.locator('#llms-sm-tab-paste').click();
+ok('sitemap tab switches back to paste mode', await page.locator('#llms-sm-panel-paste').isVisible());
 await page.locator('#llms-site-name').fill('E2E Test Site');
 await page.locator('#llms-summary').fill('A site that exists purely for automated tests.');
 ok('preview updates on typing', await until(async () => {
@@ -318,7 +326,23 @@ ok('import status shows added count', await until(async () => {
   return s.includes('Added 2 pages');
 }));
 
-/* C4. Copy to clipboard */
+/* C3b. Load example sitemap (fills paste box + imports immediately) */
+await page.locator('#llms-sitemap-example').click();
+ok('example sitemap imports example.org rows', await until(async () => {
+  const s = await page.locator('#llms-import-status').textContent();
+  const pre = await page.locator('#llms-preview-pre').textContent();
+  return s.includes('Added 6 pages') && pre.includes('- [About](https://example.org/about/)') && pre.includes('- [Pricing](https://example.org/pricing/)');
+}));
+
+/* C3c. Attribution comment + CTA module */
+ok('geo CTA section copy', await until(async () => {
+  const h2 = await page.locator('#geo-cta h2').textContent();
+  const a = await page.locator('#geo-cta a[href="/tools/ai-robots-txt-checker/"]').count();
+  const b = await page.locator('#geo-cta a[href="/tools/schema-generator/"]').count();
+  return h2.includes('Verify AI Crawlers & Structured Data') && a === 2 && b === 2;
+}));
+
+/* C4. Copy to clipboard (credit comment on by default, toggleable) */
 await page.locator('#llms-copy').click();
 ok('copy flashes success', await until(async () => {
   const label = await page.locator('#llms-copy').textContent();
@@ -328,6 +352,17 @@ ok('clipboard holds llms.txt markdown', await until(async () => {
   const clip = await page.evaluate(() => navigator.clipboard.readText());
   return clip.includes('# AIGEOKit');
 }));
+ok('credit comment included by default', await until(async () => {
+  const clip = await page.evaluate(() => navigator.clipboard.readText());
+  return clip.includes('<!-- Generated with AIGEOKit (https://www.aigeokit.com/tools/llm-txt-builder/) -->');
+}));
+await page.locator('#llms-credit').uncheck();
+await page.locator('#llms-copy').click();
+ok('credit comment removable via checkbox', await until(async () => {
+  const clip = await page.evaluate(() => navigator.clipboard.readText());
+  return clip.includes('# AIGEOKit') && !clip.includes('Generated with AIGEOKit');
+}));
+await page.locator('#llms-credit').check();
 
 /* C5. Validator: good file passes, bad file flagged */
 await page.locator('#llms-val-paste').fill('# Example\n> A short summary of the site.\n\n- [Home](https://example.com/): The homepage\n- [Pricing](https://example.com/pricing/): Pricing details');
@@ -342,6 +377,49 @@ ok('validator flags missing summary', await until(async () => {
   const out = await page.locator('#llms-val-out').textContent();
   return out.includes('Missing blockquote summary') && out.includes('line 3');
 }));
+
+/* C5b. Verify live llms.txt (edge responses mocked) */
+await page.locator('#llms-live-domain').fill('not a domain');
+await page.locator('#llms-live-check').click();
+ok('live check rejects invalid domain', await until(async () => {
+  const s = await page.locator('#llms-live-status').textContent();
+  return s.includes('That does not look like a public domain');
+}));
+await page.route('**/api/check-llms-txt*', (route) =>
+  route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({
+      ok: true,
+      url: 'https://example.com/llms.txt',
+      http_status: 200,
+      size_bytes: 120,
+      truncated: false,
+      text: '# Example\n> A summary of example.com.\n\n- [Home](https://example.com/): The homepage\n- [Pricing](https://example.com/pricing/): Plan pricing details',
+    }),
+  }),
+);
+await page.locator('#llms-live-domain').fill('example.com');
+await page.locator('#llms-live-check').click();
+ok('live check: HTTP 200 + valid structure', await until(async () => {
+  const s = await page.locator('#llms-live-status').textContent();
+  return s.includes('HTTP 200') && s.includes('looks valid') && s.includes('H1 title · found');
+}));
+await page.unroute('**/api/check-llms-txt*');
+await page.route('**/api/check-llms-txt*', (route) =>
+  route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({ ok: false, error: 'no-file', message: 'example.com has no /llms.txt (HTTP 404).' }),
+  }),
+);
+await page.locator('#llms-live-check').click();
+ok('live check: 404 no-file → guidance + back link', await until(async () => {
+  const s = await page.locator('#llms-live-status').textContent();
+  const hasLink = await page.locator('#llms-live-status a[href="#builder"]').count();
+  return s.includes('No /llms.txt deployed') && hasLink === 1;
+}));
+await page.unroute('**/api/check-llms-txt*');
 
 /* C6. Console errors on this page */
 ok('no console/page errors (llms page)', consoleErrors.length === 0, consoleErrors.slice(0, 3).join(' | '));
