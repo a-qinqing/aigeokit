@@ -1,0 +1,138 @@
+/**
+ * Cloudflare Pages Function — POST /api/geo-audit-lead
+ *
+ * Receives a GEO Audit request (email + optional website) from /geo-audit/,
+ * validates it server-side and forwards it to the webhook configured in the
+ * `GEO_AUDIT_WEBHOOK` environment variable (Lark/飞书, Slack, Zapier,
+ * Formspree — anything that accepts a JSON POST).
+ *
+ * Without that variable the request is still accepted and written to the
+ * Pages log, so the endpoint is useful the moment the page ships. Set the
+ * variable in the Cloudflare Pages dashboard to start receiving leads.
+ *
+ * Deliberately does not store anything itself: no database, no KV, no
+ * third-party SDK — just one outbound POST to a destination you control.
+ */
+
+const MAX_BODY_BYTES = 8_000;
+const WEBHOOK_TIMEOUT_MS = 6_000;
+
+/** Pragmatic shape check — the webhook destination is the real validator. */
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
+
+type ApiErrorCode = 'invalid-body' | 'invalid-email' | 'spam' | 'forward-failed';
+
+interface ApiOk {
+  ok: true;
+  /** True when the lead reached GEO_AUDIT_WEBHOOK; false when it was only logged. */
+  forwarded: boolean;
+}
+
+interface ApiErr {
+  ok: false;
+  error: ApiErrorCode;
+  message: string;
+}
+
+function json(body: ApiOk | ApiErr, status = 200): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'content-type': 'application/json; charset=utf-8' },
+  });
+}
+
+/** Strip control characters and cap length — this value ends up in a webhook payload. */
+function clean(value: unknown, maxLength: number): string {
+  if (typeof value !== 'string') return '';
+  return value
+    .replace(/[\u0000-\u001f\u007f]/g, ' ')
+    .trim()
+    .slice(0, maxLength);
+}
+
+interface LeadBody {
+  email?: unknown;
+  website?: unknown;
+  note?: unknown;
+  /** Honeypot — real visitors never fill a field they cannot see. */
+  company?: unknown;
+}
+
+export async function onRequestPost({
+  request,
+  env,
+}: {
+  request: Request;
+  env: { GEO_AUDIT_WEBHOOK?: string };
+}): Promise<Response> {
+  const raw = await request.text();
+  if (raw.length > MAX_BODY_BYTES) {
+    return json({ ok: false, error: 'invalid-body', message: 'Request body too large.' }, 413);
+  }
+
+  let body: LeadBody;
+  try {
+    body = JSON.parse(raw) as LeadBody;
+  } catch {
+    return json({ ok: false, error: 'invalid-body', message: 'Expected a JSON body.' }, 400);
+  }
+
+  if (clean(body.company, 100)) {
+    // Bot filled the honeypot: answer like a success so it has nothing to learn.
+    return json({ ok: true, forwarded: false });
+  }
+
+  const email = clean(body.email, 254);
+  const website = clean(body.website, 300);
+  const note = clean(body.note, 1_000);
+
+  if (!EMAIL_RE.test(email)) {
+    return json(
+      { ok: false, error: 'invalid-email', message: 'Enter a valid email address.' },
+      400,
+    );
+  }
+
+  const lead = {
+    email,
+    website,
+    note,
+    page: 'https://www.aigeokit.com/geo-audit/',
+    referer: clean(request.headers.get('referer'), 300),
+    received_at: new Date().toISOString(),
+  };
+
+  const webhook = env.GEO_AUDIT_WEBHOOK;
+  if (!webhook) {
+    // Not configured yet — keep the lead discoverable in the Pages log.
+    console.log('geo-audit-lead (GEO_AUDIT_WEBHOOK unset)', JSON.stringify(lead));
+    return json({ ok: true, forwarded: false });
+  }
+
+  const payload = {
+    text: `New GEO Audit request — ${lead.email}`,
+    lead,
+  };
+
+  try {
+    const res = await fetch(webhook, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(WEBHOOK_TIMEOUT_MS),
+    });
+    if (!res.ok) throw new Error(`webhook HTTP ${res.status}`);
+  } catch (err) {
+    console.error('geo-audit-lead forward failed', String(err), JSON.stringify(lead));
+    return json(
+      {
+        ok: false,
+        error: 'forward-failed',
+        message: 'We could not record your request just now — please try again in a moment.',
+      },
+      502,
+    );
+  }
+
+  return json({ ok: true, forwarded: true });
+}

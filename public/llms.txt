@@ -8,3 +8,8 @@
 - [/tools/ai-robots-txt-checker/](https://www.aigeokit.com/tools/ai-robots-txt-checker/): Check if GPTBot, PerplexityBot, ClaudeBot, and OAI-SearchBot are blocked.
 - [/tools/schema-generator/](https://www.aigeokit.com/tools/schema-generator/): Generate JSON-LD structured data with GEO Readiness score.
 - [/tools/](https://www.aigeokit.com/tools/): Complete catalog of free GEO webmaster tools.
+
+## Products
+
+- [AI Visibility Checker](https://www.aigeokit.com/ai-visibility-checker/): Evaluate how discoverable a brand is across ChatGPT, Gemini, Perplexity and AI search. Explains the four-dimension AI visibility model (Brand Entity, Content Signals, Citation Readiness, AI Presence) with a sample 100-point score report. Demo preview — live analysis coming soon.
+- [GEO Audit Report](https://www.aigeokit.com/geo-audit/): Request a hand-reviewed audit of how AI systems see a brand — AI visibility analysis, competitor comparison, citation opportunities and an optimization roadmap.

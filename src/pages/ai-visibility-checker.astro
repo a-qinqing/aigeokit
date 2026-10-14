@@ -1,0 +1,579 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const PAGE_URL = 'https://www.aigeokit.com/ai-visibility-checker/';
+const title = 'AI Visibility Checker - Check Your Brand Visibility in AI Search';
+const description =
+  "Analyze your website's AI visibility and discover how ready your brand is for ChatGPT, Gemini and AI search engines.";
+const keywords =
+  'AI Visibility Checker, AI Search Visibility Checker, ChatGPT Visibility Checker, GEO Audit Tool, AI Readiness Checker, AI Search Optimization Tool, LLM Visibility Checker';
+
+/* ------------------------------- Content -------------------------------- */
+
+/** The four dimensions every AI visibility score is built from (25 pts each). */
+const DIMENSIONS = [
+  {
+    name: 'Brand Entity',
+    icon: '🏷️',
+    desc: 'Check whether AI systems understand your brand identity and information.',
+  },
+  {
+    name: 'Content Signals',
+    icon: '📝',
+    desc: 'Analyze content quality and signals that help AI understand your expertise.',
+  },
+  {
+    name: 'Citation Readiness',
+    icon: '🔗',
+    desc: 'Evaluate whether your website is prepared to be referenced by AI answers.',
+  },
+  {
+    name: 'AI Presence',
+    icon: '📡',
+    desc: 'Measure your brand presence signals across AI search.',
+  },
+];
+
+/** Sample (illustrative) report shown on the page — never live data. */
+const SCORE_TOTAL = 72;
+const SCORE_ROWS = [
+  {
+    name: 'Brand Entity',
+    score: 18,
+    note: 'Organization schema, sameAs profiles and consistent naming make the brand unambiguous.',
+  },
+  {
+    name: 'Content Signals',
+    score: 20,
+    note: 'Structured, extractable content that demonstrates topical expertise.',
+  },
+  {
+    name: 'Citation Readiness',
+    score: 16,
+    note: 'Sources, authorship and clear claims are only partially in place.',
+  },
+  {
+    name: 'AI Presence',
+    score: 18,
+    note: 'Crawler access is open; third-party mentions are still thin.',
+  },
+].map((row) => ({ ...row, pct: Math.round((row.score / 25) * 100) }));
+
+const AUDIT_ITEMS = [
+  { title: 'AI visibility analysis', desc: 'A scored, site-wide assessment of how AI systems read your brand.' },
+  { title: 'Competitor comparison', desc: 'See how your visibility signals stack up against the sites you compete with.' },
+  { title: 'Citation opportunities', desc: 'The gaps where an answer engine would cite someone else instead of you.' },
+  { title: 'Content optimization roadmap', desc: 'A prioritized, page-by-page plan built on GEO optimization best practice.' },
+];
+
+const faqs = [
+  {
+    q: 'What is an AI Visibility Checker?',
+    a: 'An AI Visibility Checker is a tool that evaluates how discoverable and understandable your brand is to AI systems such as ChatGPT, Gemini, Perplexity and Google AI Overviews. Instead of counting keyword positions, it evaluates the signals answer engines actually rely on: a clearly defined brand entity, crawlable and well-structured content, citation-ready pages, and consistent brand mentions elsewhere on the web. Your AI Visibility Score collects those signals in one place so you can see which parts of your site are ready for AI search — and which are not.',
+  },
+  {
+    q: 'How does AI visibility affect brands?',
+    a: 'AI assistants increasingly sit between a brand and its audience. People ask ChatGPT, Gemini or Perplexity what to buy, who to hire or which tool to use, and get one short synthesized answer instead of ten blue links. If your brand is not part of the sources and entities behind that answer, you are absent at the exact moment of decision. Strong AI search visibility means your brand is described accurately, attached to the right entity and available to be cited — and the advantage compounds, because answer engines keep reusing sources they already trust.',
+  },
+  {
+    q: 'Can this tool check ChatGPT visibility?',
+    a: 'Not yet, and we want to be precise about that. This first release is a demo: you enter a website URL and we show a sample report built on our four-dimension model — Brand Entity, Content Signals, Citation Readiness and AI Presence. We deliberately do not query ChatGPT or any other assistant in the background, and we never claim to know where your brand appears inside an AI-generated answer. Live analysis, including assistant-by-assistant presence checks, is on the roadmap and will ship once this demo confirms the demand for it.',
+  },
+  {
+    q: 'What is GEO optimization?',
+    a: 'GEO optimization — generative engine optimization — is the practice of making a website easy for large language models and answer engines to ingest, verify and cite: unambiguous entity definitions, structured data, accessible content, explicit sources and consistent brand information across the web. It complements classic SEO rather than replacing it. Traditional search still rewards technical health and authority, while GEO optimization focuses on being quotable inside an AI answer. The free AIGEOKit tools already automate the technical half of that work.',
+  },
+];
+
+/* --------------------------- Structured data ---------------------------- */
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'AI Visibility Checker',
+    url: PAGE_URL,
+    description,
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'AIGEOKit',
+      url: 'https://www.aigeokit.com/',
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://www.aigeokit.com/',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'AI Visibility Checker',
+        item: PAGE_URL,
+      },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.a,
+      },
+    })),
+  },
+];
+
+const chips = [
+  { icon: '🤖', text: 'Built for ChatGPT, Gemini, Perplexity & AI Overviews' },
+  { icon: '📊', text: '4-dimension model · 100-point scale' },
+  { icon: '🧪', text: 'Demo preview — sample report in one click' },
+  { icon: '🔒', text: 'No sign-up · nothing is sent anywhere' },
+];
+
+const INTERNAL_LINKS = [
+  {
+    href: '/tools/',
+    label: 'Free GEO tools',
+    title: 'AIGEOKit Tools Directory',
+    desc: 'Schema generator, AI robots.txt checker and llms.txt builder — all free and client-side.',
+    cta: 'Browse the tools →',
+  },
+  {
+    href: '/#guide',
+    label: 'GEO guide',
+    title: 'Generative Engine Optimization Guide',
+    desc: 'How AI answer engines pick sources, and the checklist that gets a page cited.',
+    cta: 'Read the GEO guide →',
+  },
+  {
+    href: '/geo-audit',
+    label: 'GEO audit',
+    title: 'GEO Audit Report',
+    desc: 'A hand-reviewed audit of how AI systems see your brand, with a prioritized roadmap.',
+    cta: 'Request a GEO audit →',
+  },
+];
+---
+
+<Layout title={title} description={description} keywords={keywords} canonical={PAGE_URL} jsonLd={jsonLd}>
+  <Header />
+
+  <!-- ============================ Hero ============================ -->
+  <section class="relative overflow-hidden">
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+      <div class="absolute -top-32 left-1/2 h-[420px] w-[860px] -translate-x-1/2 rounded-full bg-mint-500/10 blur-[120px]"></div>
+    </div>
+
+    <div class="relative mx-auto max-w-7xl px-4 pb-10 pt-10 sm:px-6 lg:px-8">
+      <!-- Breadcrumb: Home → AI Visibility Checker -->
+      <nav aria-label="Breadcrumb" class="text-xs text-sand-500">
+        <ol class="flex flex-wrap items-center gap-1.5">
+          <li><a href="/" class="font-medium transition-colors hover:text-mint-300">Home</a></li>
+          <li aria-hidden="true" class="text-sand-600">/</li>
+          <li aria-current="page" class="font-semibold text-sand-300">AI Visibility Checker</li>
+        </ol>
+      </nav>
+
+      <div class="mt-10 text-center sm:mt-14">
+        <p class="mx-auto inline-flex items-center gap-2 rounded-full border border-ink-600 bg-ink-850 px-4 py-1.5 text-xs font-medium text-sand-400">
+          <span class="text-mint-400">✦</span>
+          AI search visibility · demo preview
+        </p>
+
+        <h1 class="mx-auto mt-6 max-w-3xl text-balance text-4xl font-extrabold leading-[1.1] tracking-tight text-sand-100 sm:text-5xl">
+          AI Visibility <span class="bg-gradient-to-r from-mint-400 to-cyan-400 bg-clip-text text-transparent">Checker</span>
+        </h1>
+
+        <p class="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-sand-400 sm:text-lg">
+          Check how visible your brand is across ChatGPT, Gemini, Perplexity and AI search engines.
+        </p>
+
+        <!-- Demo form: validates the URL locally, then reveals the sample report. -->
+        <form id="aiv-form" novalidate class="mx-auto mt-9 w-full max-w-2xl">
+          <div class="flex flex-col gap-3 rounded-2xl border border-ink-700 bg-ink-850 p-3 sm:flex-row sm:items-center">
+            <label for="aiv-url" class="sr-only">Website URL</label>
+            <input
+              id="aiv-url"
+              type="text"
+              name="url"
+              inputmode="url"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="https://example.com"
+              class="w-full flex-1 rounded-xl border border-ink-600 bg-ink-900 px-4 py-3 text-sm text-sand-100 placeholder:text-sand-500 focus:border-mint-500 focus:outline-none"
+            />
+            <button
+              type="submit"
+              class="shrink-0 rounded-xl bg-mint-500 px-7 py-3 text-sm font-bold text-ink-950 shadow-lg shadow-mint-500/20 transition-all hover:bg-mint-400"
+            >
+              Analyze Visibility
+            </button>
+          </div>
+
+          <p id="aiv-error" hidden class="mt-3 text-center text-xs font-medium text-red-300"></p>
+
+          <p id="aiv-status" hidden class="mt-3 rounded-xl border border-mint-500/30 bg-mint-500/10 px-4 py-3 text-center text-xs leading-relaxed text-mint-200">
+            <strong>Demo mode:</strong> this is a sample report for
+            <span id="aiv-demo-domain" class="font-mono font-bold">example.com</span> using illustrative
+            data — no crawl, no third-party API, no live assistant queries yet.
+          </p>
+
+          <p class="mt-3 text-center text-[11px] leading-relaxed text-sand-500">
+            Free preview · no login · live AI visibility analysis ships next
+          </p>
+        </form>
+
+        <ul class="mx-auto mt-12 grid max-w-3xl grid-cols-1 gap-3 sm:grid-cols-2">
+          {chips.map((c) => (
+            <li class="flex items-center justify-center gap-2 rounded-xl border border-ink-700/70 bg-ink-850/60 px-4 py-3 text-[13px] text-sand-300">
+              <span aria-hidden="true">{c.icon}</span>{c.text}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <!-- ===================== What is AI Visibility? ===================== -->
+    <section id="what-is-ai-visibility" class="mx-auto max-w-7xl scroll-mt-20 px-4 py-16 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:items-start">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest text-mint-400">The basics</p>
+          <h2 class="mt-2 text-3xl font-bold tracking-tight text-sand-100 sm:text-4xl">
+            What is AI Visibility?
+          </h2>
+          <p class="mt-4 text-[15px] font-semibold leading-relaxed text-sand-200">
+            AI visibility measures how easily AI systems can discover, understand and mention your
+            brand.
+          </p>
+          <p class="mt-4 text-sm leading-relaxed text-sand-400">
+            AI visibility — also called <strong class="text-sand-200">AI search visibility</strong> or
+            LLM visibility — is the degree to which AI assistants and answer engines can find your
+            brand, describe it correctly and choose to mention it. It is not a single number you can
+            read off a dashboard: it is the sum of the signals that make your brand machine-readable
+            to a language model.
+          </p>
+          <p class="mt-4 text-sm leading-relaxed text-sand-400">
+            That is why a site can be perfectly optimized for classic search and still be invisible to
+            AI search. The two systems reward different things, and the gap between them is exactly
+            what an AI Visibility Checker is built to expose.
+          </p>
+        </div>
+
+        <ul class="space-y-3">
+          {[
+            {
+              t: 'Discoverable',
+              d: 'AI crawlers such as GPTBot, OAI-SearchBot and PerplexityBot can reach your pages — robots.txt rules decide this.',
+            },
+            {
+              t: 'Understandable',
+              d: 'Your brand is an unambiguous entity: Organization schema, sameAs profiles and one consistent name.',
+            },
+            {
+              t: 'Quotable',
+              d: 'Content is structured so a specific claim can be extracted with attribution — sources, authorship, dates.',
+            },
+            {
+              t: 'Corroborated',
+              d: 'Other sites describe your brand the same way, which is how an answer engine decides you are safe to cite.',
+            },
+          ].map((item) => (
+            <li class="flex gap-4 rounded-2xl border border-ink-700 bg-ink-850 p-5">
+              <span aria-hidden="true" class="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-lg bg-mint-500/15 text-[11px] font-bold text-mint-300 ring-1 ring-mint-500/30">
+                ✓
+              </span>
+              <span>
+                <span class="block text-sm font-bold text-sand-100">{item.t}</span>
+                <span class="mt-1 block text-[13px] leading-relaxed text-sand-400">{item.d}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===================== How it works ===================== -->
+    <section id="how-it-works" class="mx-auto max-w-7xl scroll-mt-20 px-4 py-16 sm:px-6 lg:px-8">
+      <div class="mx-auto mb-12 max-w-2xl text-center">
+        <p class="text-xs font-semibold uppercase tracking-widest text-mint-400">The model</p>
+        <h2 class="mt-2 text-3xl font-bold tracking-tight text-sand-100 sm:text-4xl">
+          How AI Visibility Checker Works
+        </h2>
+        <p class="mt-3 text-sm leading-relaxed text-sand-400">
+          The scoring model evaluates four dimensions, 25 points each. Together they describe how
+          confidently an AI system can talk about your brand.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {DIMENSIONS.map((d, i) => (
+          <div class="flex flex-col rounded-2xl border border-ink-700 bg-ink-850 p-6">
+            <span class="flex items-center justify-between">
+              <span aria-hidden="true" class="grid h-11 w-11 place-items-center rounded-xl bg-ink-800 text-lg ring-1 ring-ink-600">
+                {d.icon}
+              </span>
+              <span class="text-[11px] font-bold uppercase tracking-widest text-sand-500">
+                0{i + 1} · 25 pts
+              </span>
+            </span>
+            <h3 class="mt-4 text-[15px] font-bold text-sand-100">{d.name}</h3>
+            <p class="mt-1.5 text-[13px] leading-relaxed text-sand-400">{d.desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ===================== AI Visibility Score ===================== -->
+    <section id="score" class="mx-auto max-w-7xl scroll-mt-20 px-4 py-16 sm:px-6 lg:px-8">
+      <div class="mx-auto mb-10 max-w-2xl text-center">
+        <p class="text-xs font-semibold uppercase tracking-widest text-mint-400">Sample report</p>
+        <h2 class="mt-2 text-3xl font-bold tracking-tight text-sand-100 sm:text-4xl">
+          AI Visibility Score
+        </h2>
+        <p class="mt-3 text-sm leading-relaxed text-sand-400">
+          This is an illustrative example of the report format — it shows how the four dimensions are
+          assessed and weighted, not a measurement of any real site.
+        </p>
+      </div>
+
+      <div id="aiv-score-card" class="mx-auto max-w-3xl rounded-3xl border border-ink-700 bg-ink-850 p-7 sm:p-9">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <p class="inline-flex items-center gap-2 rounded-full border border-ink-600 bg-ink-900 px-3 py-1 text-[11px] font-semibold text-sand-400">
+            <span class="font-mono">Sample report · <span id="aiv-score-domain">example.com</span></span>
+          </p>
+          <p class="inline-flex items-center rounded-full border border-mint-500/30 bg-mint-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-mint-300">
+            Demo data
+          </p>
+        </div>
+
+        <div class="mt-7 flex flex-col items-center gap-2 sm:flex-row sm:items-end sm:gap-5">
+          <p class="text-xs font-semibold uppercase tracking-widest text-sand-500">AI Visibility Score</p>
+          <p class="text-5xl font-extrabold tracking-tight text-sand-100 sm:text-6xl">
+            {SCORE_TOTAL}<span class="text-2xl font-bold text-sand-500 sm:text-3xl">/100</span>
+          </p>
+        </div>
+
+        <div class="mt-8 space-y-5">
+          {SCORE_ROWS.map((row) => (
+            <div>
+              <div class="flex items-baseline justify-between gap-3">
+                <p class="text-sm font-bold text-sand-100">{row.name}</p>
+                <p class="font-mono text-xs font-bold text-sand-300">{row.score}/25</p>
+              </div>
+              <div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-ink-800 ring-1 ring-ink-700">
+                <div
+                  class="h-full rounded-full bg-gradient-to-r from-mint-500 to-cyan-400"
+                  style={`width: ${row.pct}%`}
+                ></div>
+              </div>
+              <p class="mt-2 text-[13px] leading-relaxed text-sand-500">{row.note}</p>
+            </div>
+          ))}
+        </div>
+
+        <p class="mt-8 border-t border-ink-700/70 pt-5 text-[12px] leading-relaxed text-sand-500">
+          Live reports will <strong class="text-sand-400">analyze</strong> and{' '}
+          <strong class="text-sand-400">evaluate</strong> each dimension from public signals on your
+          site; the sample above illustrates the format only. The score describes AI readiness — it is
+          not a promise of placement in any AI answer.
+        </p>
+      </div>
+    </section>
+
+    <!-- ===================== Why it matters ===================== -->
+    <section id="why-it-matters" class="mx-auto max-w-7xl scroll-mt-20 px-4 py-16 sm:px-6 lg:px-8">
+      <div class="mx-auto mb-12 max-w-3xl text-center">
+        <p class="text-xs font-semibold uppercase tracking-widest text-mint-400">The shift</p>
+        <h2 class="mt-2 text-3xl font-bold tracking-tight text-sand-100 sm:text-4xl">
+          Why AI Visibility Matters
+        </h2>
+        <p class="mt-4 text-[15px] leading-relaxed text-sand-300">
+          Search behavior is changing. Users increasingly use AI assistants to discover brands and
+          information.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+        {[
+          {
+            t: 'Answers replace link lists',
+            d: 'A person asks one question and receives one synthesized recommendation. There is no second page of results to fall back on — you are either part of the answer or you are not.',
+          },
+          {
+            t: 'Only a few sources get cited',
+            d: 'AI search draws on a small set of pages it can parse and verify quickly. AI search optimization is the work of becoming one of those pages instead of the one that was skipped.',
+          },
+          {
+            t: 'The advantage compounds',
+            d: 'Sources that answer engines already trust get reused. GEO optimization early means every future answer that references your category is more likely to reference you too.',
+          },
+        ].map((card) => (
+          <div class="flex flex-col rounded-2xl border border-ink-700 bg-ink-850 p-6">
+            <h3 class="text-[15px] font-bold text-sand-100">{card.t}</h3>
+            <p class="mt-2 text-[13px] leading-relaxed text-sand-400">{card.d}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ===================== GEO Audit conversion ===================== -->
+    <section id="geo-audit" class="mx-auto max-w-7xl scroll-mt-20 px-4 pb-16 pt-4 sm:px-6 lg:px-8">
+      <div class="relative overflow-hidden rounded-3xl border border-mint-500/25 bg-gradient-to-br from-mint-500/10 via-ink-850 to-ink-850 p-8 sm:p-10">
+        <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+          <div class="absolute -right-20 -top-24 h-[280px] w-[480px] rounded-full bg-mint-500/10 blur-[100px]"></div>
+        </div>
+
+        <div class="relative grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-center">
+          <div>
+            <p class="inline-flex items-center gap-2 rounded-full border border-mint-500/30 bg-mint-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-mint-300">
+              Now accepting requests
+            </p>
+            <h2 class="mt-4 max-w-xl text-balance text-2xl font-bold tracking-tight text-sand-100 sm:text-3xl">
+              Get Your Full GEO Audit Report
+            </h2>
+            <p class="mt-3 max-w-xl text-sm leading-relaxed text-sand-300">
+              The checker above previews the format. The full GEO Audit Report goes deeper: a
+              complete AI visibility analysis of your site, reviewed page by page.
+            </p>
+
+            <a
+              href="/geo-audit"
+              data-track="request-geo-audit"
+              data-track-label="geo-audit section CTA"
+              class="mt-7 inline-flex rounded-xl bg-mint-500 px-7 py-3.5 text-sm font-bold text-ink-950 shadow-lg shadow-mint-500/20 transition-all hover:bg-mint-400"
+            >
+              Request GEO Audit →
+            </a>
+            <p class="mt-3 text-[11px] leading-relaxed text-sand-500">
+              Two fields, no payment: we reply with scope and pricing before anything starts.
+            </p>
+          </div>
+
+          <ul class="space-y-3">
+            {AUDIT_ITEMS.map((item) => (
+              <li class="flex gap-3 rounded-2xl border border-ink-700/70 bg-ink-850/70 p-4">
+                <span aria-hidden="true" class="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-md bg-mint-500/15 text-[10px] font-bold text-mint-300 ring-1 ring-mint-500/30">
+                  ✓
+                </span>
+                <span>
+                  <span class="block text-sm font-bold text-sand-100">{item.title}</span>
+                  <span class="mt-0.5 block text-[13px] leading-relaxed text-sand-400">{item.desc}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== FAQ ===================== -->
+    <section id="faq" class="mx-auto max-w-7xl scroll-mt-20 px-4 py-16 sm:px-6 lg:px-8">
+      <div class="mx-auto mb-10 max-w-2xl text-center">
+        <p class="text-xs font-semibold uppercase tracking-widest text-mint-400">FAQ</p>
+        <h2 class="mt-2 text-3xl font-bold tracking-tight text-sand-100 sm:text-4xl">
+          AI Visibility, answered
+        </h2>
+      </div>
+
+      <div class="mx-auto max-w-3xl space-y-3">
+        {faqs.map((f, i) => (
+          <details
+            open={i === 0}
+            class="group rounded-2xl border border-ink-700 bg-ink-850 transition-colors open:border-mint-500/30"
+          >
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-4 [&::-webkit-details-marker]:hidden">
+              <span class="text-[15px] font-bold text-sand-100">{f.q}</span>
+              <span aria-hidden="true" class="h-4 w-4 shrink-0 text-sand-500 transition-transform duration-200 group-open:rotate-180">
+                <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.06l3.71-3.83a.75.75 0 1 1 1.08 1.04l-4.25 4.39a.75.75 0 0 1-1.08 0L5.21 8.27a.75.75 0 0 1 .02-1.06z" clip-rule="evenodd"/></svg>
+              </span>
+            </summary>
+            <div class="border-t border-ink-700/70 px-6 pb-5 pt-3">
+              <p class="text-sm leading-relaxed text-sand-400">{f.a}</p>
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <!-- ===================== Internal links ===================== -->
+    <section id="next-steps" class="mx-auto max-w-7xl scroll-mt-20 px-4 pb-24 pt-2 sm:px-6 lg:px-8">
+      <p class="text-xs font-semibold uppercase tracking-widest text-mint-400">Next steps</p>
+      <h2 class="mt-2 text-2xl font-bold tracking-tight text-sand-100 sm:text-3xl">
+        Keep Improving Your AI Visibility
+      </h2>
+
+      <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+        {INTERNAL_LINKS.map((link) => (
+          <div class="flex flex-col rounded-2xl border border-ink-700 bg-ink-850 p-6">
+            <span class="w-fit rounded-full border border-ink-600 px-2.5 py-1 text-[11px] font-semibold text-sand-500">
+              {link.label}
+            </span>
+            <h3 class="mt-3 text-[15px] font-bold text-sand-100">{link.title}</h3>
+            <p class="mt-1.5 flex-1 text-[13px] leading-relaxed text-sand-500">{link.desc}</p>
+            <a
+              href={link.href}
+              data-track={link.href === '/geo-audit' ? 'request-geo-audit' : undefined}
+              data-track-label={link.href === '/geo-audit' ? 'next-steps card' : undefined}
+              class="mt-4 text-xs font-bold text-mint-400 transition-colors hover:text-mint-300"
+            >
+              {link.cta}
+            </a>
+          </div>
+        ))}
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script>
+    import '../lib/aiVisibilityApp.ts';
+  </script>
+</Layout>
+
+<style>
+  /* Draws the eye to the sample report after the demo form is submitted. */
+  .aiv-reveal {
+    animation: aiv-pulse 1.6s ease-out;
+  }
+
+  @keyframes aiv-pulse {
+    0% {
+      box-shadow:
+        0 0 0 1px rgb(16 185 129 / 0.7),
+        0 0 0 0 rgb(16 185 129 / 0.35);
+    }
+    100% {
+      box-shadow:
+        0 0 0 1px rgb(16 185 129 / 0),
+        0 0 0 26px rgb(16 185 129 / 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aiv-reveal {
+      animation: none;
+    }
+  }
+</style>

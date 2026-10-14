@@ -1,0 +1,262 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const PAGE_URL = 'https://www.aigeokit.com/geo-audit/';
+const title = 'GEO Audit Report - AI Visibility Analysis | AIGEOKit';
+const description =
+  'Request a GEO audit report: AI visibility analysis, competitor comparison, citation opportunities and an optimization roadmap for your brand in AI search.';
+const keywords =
+  'GEO audit, GEO audit report, AI visibility audit, AI search audit, generative engine optimization audit, GEO audit service';
+
+/* ------------------------------- Content -------------------------------- */
+
+const DELIVERABLES = [
+  {
+    title: 'AI visibility analysis',
+    desc: 'How AI systems currently read your brand: entity clarity, crawl access and the signals behind every answer.',
+  },
+  {
+    title: 'Competitor comparison',
+    desc: 'Where the sites you compete with are already visible to AI search — and where you are not.',
+  },
+  {
+    title: 'Citation opportunities',
+    desc: 'The specific pages and claims an answer engine could quote from you, once they are ready to be quoted.',
+  },
+  {
+    title: 'Optimization roadmap',
+    desc: 'A prioritized, page-by-page plan: what to fix first, what to publish next, and what can wait.',
+  },
+];
+
+const STEPS = [
+  { n: '01', t: 'Send your site', d: 'One email address and the domain you want reviewed.' },
+  { n: '02', t: 'We assess the four dimensions', d: 'A manual review of brand entity, content signals, citation readiness and AI presence.' },
+  { n: '03', t: 'You get the report', d: 'Findings, competitor context and a roadmap you can hand to a developer or writer.' },
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: 'GEO Audit Report',
+    url: PAGE_URL,
+    description,
+    serviceType: 'Generative engine optimization audit',
+    provider: {
+      '@type': 'Organization',
+      name: 'AIGEOKit',
+      url: 'https://www.aigeokit.com/',
+    },
+    areaServed: 'Worldwide',
+    isRelatedTo: {
+      '@type': 'WebApplication',
+      name: 'AI Visibility Checker',
+      url: 'https://www.aigeokit.com/ai-visibility-checker/',
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://www.aigeokit.com/',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'GEO Audit Report',
+        item: PAGE_URL,
+      },
+    ],
+  },
+];
+---
+
+<Layout title={title} description={description} keywords={keywords} canonical={PAGE_URL} jsonLd={jsonLd}>
+  <Header />
+
+  <main>
+    <!-- ============================ Hero ============================ -->
+    <section class="relative overflow-hidden">
+      <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+        <div class="absolute -top-32 left-1/2 h-[420px] w-[860px] -translate-x-1/2 rounded-full bg-mint-500/10 blur-[120px]"></div>
+      </div>
+
+      <div class="relative mx-auto max-w-7xl px-4 pb-12 pt-10 sm:px-6 lg:px-8">
+        <!-- Breadcrumb: Home → GEO Audit Report -->
+        <nav aria-label="Breadcrumb" class="text-xs text-sand-500">
+          <ol class="flex flex-wrap items-center gap-1.5">
+            <li><a href="/" class="font-medium transition-colors hover:text-mint-300">Home</a></li>
+            <li aria-hidden="true" class="text-sand-600">/</li>
+            <li aria-current="page" class="font-semibold text-sand-300">GEO Audit Report</li>
+          </ol>
+        </nav>
+
+        <div class="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-14">
+          <!-- Pitch -->
+          <div>
+            <p class="inline-flex items-center gap-2 rounded-full border border-mint-500/30 bg-mint-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-mint-300">
+              Now accepting requests
+            </p>
+            <h1 class="mt-5 text-balance text-4xl font-extrabold leading-[1.1] tracking-tight text-sand-100 sm:text-5xl">
+              GEO Audit Report
+            </h1>
+            <p class="mt-4 text-pretty text-base leading-relaxed text-sand-300 sm:text-lg">
+              Analyze your brand visibility in AI search.
+            </p>
+            <p class="mt-4 max-w-xl text-sm leading-relaxed text-sand-400">
+              A hand-reviewed audit of how ChatGPT, Gemini, Perplexity and other AI answer engines
+              currently see your site — and a prioritized plan to make your brand quotable. It builds
+              on the four dimensions of the <a href="/ai-visibility-checker/" class="font-semibold text-mint-400 underline decoration-mint-500/40 underline-offset-2 transition-colors hover:text-mint-300">AI Visibility Checker</a>, with the analysis done for you.
+            </p>
+
+            <ul class="mt-8 space-y-3">
+              {DELIVERABLES.map((d) => (
+                <li class="flex gap-3">
+                  <span aria-hidden="true" class="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-md bg-mint-500/15 text-[10px] font-bold text-mint-300 ring-1 ring-mint-500/30">
+                    ✓
+                  </span>
+                  <span>
+                    <span class="block text-sm font-bold text-sand-100">{d.title}</span>
+                    <span class="mt-0.5 block text-[13px] leading-relaxed text-sand-400">{d.desc}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            <p class="mt-8 text-[12px] leading-relaxed text-sand-500">
+              Reports are quoted per site — pricing and scope are confirmed by email before anything
+              starts. No subscription.
+            </p>
+          </div>
+
+          <!-- Request form -->
+          <div>
+            <div class="relative rounded-3xl border border-ink-700 bg-ink-850 p-7 sm:p-8">
+              <h2 class="text-lg font-bold tracking-tight text-sand-100">Request your GEO audit</h2>
+              <p class="mt-1.5 text-[13px] leading-relaxed text-sand-500">
+                Two fields. We reply to the address you give us with next steps and scope.
+              </p>
+
+              <form id="ga-form" novalidate class="mt-6">
+                <!-- Honeypot: hidden from humans, tempting to bots. -->
+                <div aria-hidden="true" class="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+                  <label for="ga-company">Company</label>
+                  <input id="ga-company" type="text" name="company" tabindex="-1" autocomplete="off" />
+                </div>
+
+                <div class="flex flex-col gap-2">
+                  <label for="ga-email" class="text-sm font-bold text-sand-100">Email *</label>
+                  <input
+                    id="ga-email"
+                    type="email"
+                    name="email"
+                    autocomplete="email"
+                    spellcheck="false"
+                    placeholder="you@company.com"
+                    class="w-full rounded-xl border border-ink-600 bg-ink-900 px-4 py-2.5 text-sm text-sand-100 placeholder:text-sand-500 focus:border-mint-500 focus:outline-none"
+                  />
+                </div>
+
+                <div class="mt-5 flex flex-col gap-2">
+                  <label for="ga-website" class="text-sm font-bold text-sand-100">
+                    Website <span class="font-normal text-sand-500">(optional)</span>
+                  </label>
+                  <input
+                    id="ga-website"
+                    type="text"
+                    name="website"
+                    inputmode="url"
+                    autocomplete="url"
+                    spellcheck="false"
+                    placeholder="https://example.com"
+                    class="w-full rounded-xl border border-ink-600 bg-ink-900 px-4 py-2.5 font-mono text-xs text-sand-100 placeholder:text-sand-500 focus:border-mint-500 focus:outline-none"
+                  />
+                </div>
+
+                <p id="ga-error" hidden class="mt-4 text-xs font-medium text-red-300"></p>
+
+                <button
+                  id="ga-submit"
+                  type="submit"
+                  class="mt-6 w-full rounded-xl bg-mint-500 px-7 py-3.5 text-sm font-bold text-ink-950 shadow-lg shadow-mint-500/20 transition-all hover:bg-mint-400 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  Request GEO Audit
+                </button>
+
+                <p class="mt-3 text-[11px] leading-relaxed text-sand-500">
+                  We use your email only to reply about this audit. No newsletter, no sharing, no
+                  account required.
+                </p>
+              </form>
+
+              <!-- Confirmation panel, revealed by geoAuditApp.ts -->
+              <div id="ga-success" tabindex="-1" hidden class="mt-6 rounded-2xl border border-mint-500/30 bg-mint-500/10 p-6 outline-none">
+                <p class="text-sm font-bold text-mint-200">✓ Request received</p>
+                <p class="mt-2 text-[13px] leading-relaxed text-sand-300">
+                  Thanks — we have your details. We will reply to
+                  <span id="ga-success-email" class="font-mono font-bold text-sand-100"></span>
+                  with next steps and scope for your GEO audit report.
+                </p>
+              </div>
+            </div>
+
+            <!-- How it works -->
+            <ol class="mt-6 space-y-3">
+              {STEPS.map((s) => (
+                <li class="flex gap-4 rounded-2xl border border-ink-700/70 bg-ink-850/60 p-4">
+                  <span class="font-mono text-[11px] font-bold text-mint-400">{s.n}</span>
+                  <span>
+                    <span class="block text-[13px] font-bold text-sand-100">{s.t}</span>
+                    <span class="mt-0.5 block text-[12px] leading-relaxed text-sand-500">{s.d}</span>
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== Related free tools ===================== -->
+    <section class="mx-auto max-w-7xl px-4 pb-24 pt-4 sm:px-6 lg:px-8">
+      <div class="relative overflow-hidden rounded-3xl border border-mint-500/25 bg-gradient-to-br from-mint-500/10 via-ink-850 to-ink-850 p-8 sm:p-10">
+        <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+          <div class="absolute -right-20 -top-24 h-[280px] w-[480px] rounded-full bg-mint-500/10 blur-[100px]"></div>
+        </div>
+        <div class="relative">
+          <h2 class="max-w-2xl text-balance text-2xl font-bold tracking-tight text-sand-100 sm:text-3xl">
+            Start with the free tools
+          </h2>
+          <p class="mt-3 max-w-2xl text-sm leading-relaxed text-sand-300">
+            The audit goes further, but several of the underlying checks are already free — and they
+            run right in your browser.
+          </p>
+          <div class="mt-6 flex flex-wrap gap-3">
+            <a href="/ai-visibility-checker/" class="rounded-xl border border-mint-500/40 bg-mint-500/10 px-5 py-2.5 text-xs font-bold text-mint-300 transition-colors hover:bg-mint-500/20">
+              📊 AI Visibility Checker →
+            </a>
+            <a href="/tools/schema-generator/" class="rounded-xl border border-mint-500/40 bg-mint-500/10 px-5 py-2.5 text-xs font-bold text-mint-300 transition-colors hover:bg-mint-500/20">
+              🧩 Schema Generator →
+            </a>
+            <a href="/tools/" class="rounded-xl border border-mint-500/40 bg-mint-500/10 px-5 py-2.5 text-xs font-bold text-mint-300 transition-colors hover:bg-mint-500/20">
+              🧰 All GEO Tools →
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script>
+    import '../lib/geoAuditApp.ts';
+  </script>
+</Layout>
