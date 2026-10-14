@@ -32,6 +32,9 @@ interface ApiErr {
   ok: false;
   error: ApiErrorCode;
   message: string;
+  /** Short, sanitized reason from the webhook — makes a silent rejection
+   *  (HTTP 200 + error code in the body) debuggable from the outside. */
+  detail?: string;
 }
 
 function json(body: ApiOk | ApiErr, status = 200): Response {
@@ -48,6 +51,57 @@ function clean(value: unknown, maxLength: number): string {
     .replace(/[\u0000-\u001f\u007f]/g, ' ')
     .trim()
     .slice(0, maxLength);
+}
+
+interface Lead {
+  email: string;
+  website: string;
+  note: string;
+  page: string;
+  referer: string;
+  received_at: string;
+}
+
+/** Lark/飞书 custom bots only accept `{ msg_type, content: { text } }` — a
+ *  Slack-shaped body is rejected. Pick the shape from the webhook host. */
+function isLarkWebhook(url: string): boolean {
+  return /(^|\/\/)([a-z0-9-]+\.)*(open\.feishu\.cn|open\.larksuite\.com)\//i.test(url);
+}
+
+function buildPayload(webhook: string, lead: Lead): Record<string, unknown> {
+  const text = [
+    `New GEO Audit request — ${lead.email}`,
+    lead.website ? `Website: ${lead.website}` : 'Website: (not given)',
+    `Received: ${lead.received_at}`,
+  ].join('\n');
+
+  if (isLarkWebhook(webhook)) return { msg_type: 'text', content: { text } };
+  return { text, lead };
+}
+
+/**
+ * A 2xx is not proof of delivery: Lark answers HTTP 200 with a non-zero `code`
+ * in the body, and Slack answers 200 with `{ ok: false }`. Returns a short
+ * reason when the webhook rejected the message, or null when it accepted.
+ */
+function rejectionReason(status: number, body: string): string | null {
+  if (status < 200 || status >= 300) return `HTTP ${status}`;
+
+  let parsed: Record<string, unknown>;
+  try {
+    parsed = JSON.parse(body) as Record<string, unknown>;
+  } catch {
+    return null; // plain-text 2xx from a generic endpoint — treat as accepted
+  }
+
+  if (typeof parsed.code === 'number' && parsed.code !== 0) {
+    const msg = typeof parsed.msg === 'string' ? `: ${parsed.msg}` : '';
+    return `code ${parsed.code}${msg}`;
+  }
+  if (parsed.ok === false) {
+    return typeof parsed.error === 'string' ? `ok:false (${parsed.error})` : 'ok:false';
+  }
+  return null;
 }
 
 interface LeadBody {
@@ -93,7 +147,7 @@ export async function onRequestPost({
     );
   }
 
-  const lead = {
+  const lead: Lead = {
     email,
     website,
     note,
@@ -109,10 +163,7 @@ export async function onRequestPost({
     return json({ ok: true, forwarded: false });
   }
 
-  const payload = {
-    text: `New GEO Audit request — ${lead.email}`,
-    lead,
-  };
+  const payload = buildPayload(webhook, lead);
 
   try {
     const res = await fetch(webhook, {
@@ -121,14 +172,18 @@ export async function onRequestPost({
       body: JSON.stringify(payload),
       signal: AbortSignal.timeout(WEBHOOK_TIMEOUT_MS),
     });
-    if (!res.ok) throw new Error(`webhook HTTP ${res.status}`);
+    // Read the body even on 2xx: Lark reports failures in the payload.
+    const reason = rejectionReason(res.status, (await res.text()).slice(0, 500));
+    if (reason) throw new Error(`webhook rejected: ${reason}`);
   } catch (err) {
-    console.error('geo-audit-lead forward failed', String(err), JSON.stringify(lead));
+    const detail = clean(err instanceof Error ? err.message : String(err), 160);
+    console.error('geo-audit-lead forward failed', detail, JSON.stringify(lead));
     return json(
       {
         ok: false,
         error: 'forward-failed',
         message: 'We could not record your request just now — please try again in a moment.',
+        detail,
       },
       502,
     );
