@@ -3,7 +3,7 @@
  * BFS-crawls the local site, verifies every internal href & asset returns 200,
  * and confirms each #fragment target exists on its destination page.
  *
- * Usage: npm run check:links   (dev or preview server must run on :4321)
+ * Usage: node link-check.mjs   (dev or preview server must run on :4321)
  */
 const BASE = process.env.E2E_BASE || 'http://localhost:4321';
 const SEED = ['/', '/tools/', '/tools/schema-generator/'];
@@ -20,8 +20,15 @@ const cache = new Map(); // path → { status, html }
 
 async function grab(path) {
   if (cache.has(path)) return cache.get(path);
-  const r = await fetch(BASE + path, { redirect: 'follow' });
-  const res = { status: r.status, html: await r.text() };
+  // manual: surface 3xx so non-canonical internal links are reported instead
+  // of being silently followed to their final URL.
+  const r = await fetch(BASE + path, { redirect: 'manual' });
+  const res = {
+    status: r.status,
+    location: r.headers.get('location') || '',
+    type: r.headers.get('content-type') || '',
+    html: await r.text(),
+  };
   cache.set(path, res);
   return res;
 }
@@ -33,9 +40,10 @@ function splitHref(href) {
   return { path: href.slice(0, end), frag: h >= 0 ? href.slice(h + 1) : '' };
 }
 
-async function checkPage(path) {
-  const { status, html } = await grab(path);
+async function checkPage(path, queue) {
+  const { status, html, type } = await grab(path);
   ok(`${path} → HTTP ${status}`, status === 200);
+  if (status !== 200 || !type.includes('text/html')) return;
 
   // every link / asset on this page
   const refs = [...html.matchAll(/(?:href|src)="([^"]+)"/g)].map((m) => m[1]);
@@ -69,15 +77,35 @@ async function checkPage(path) {
       }
       continue;
     }
-    const key = p.replace(/\/+$/, '/') || '/';
+    // Dedupe on the exact URL: /geo-audit and /geo-audit/ are different
+    // requests, and the non-canonical one must still be checked.
+    const key = p;
     const firstVisit = !internal.has(key);
     internal.add(key);
 
     if (firstVisit) {
       const r = await grab(p);
       const statusOk = r.status === 200;
-      ok(`${p} → HTTP ${r.status}`, statusOk);
+      const redirected = r.status >= 300 && r.status < 400;
+      const redirectNote = redirected && r.location ? ` → ${r.location}` : '';
+      ok(
+        `${p} → HTTP ${r.status}${redirectNote}`,
+        statusOk,
+        redirected ? '(internal link redirects — point it at the final URL)' : '',
+      );
       if (!statusOk) continue;
+      // Local preview serves /route and /route/ alike, while Cloudflare Pages
+      // 308-redirects the extensionless form. If the trailing-slash variant is
+      // also a page, /route is non-canonical even though it returned 200 here.
+      if (!p.endsWith('/') && !(p.split('/').pop() || '').includes('.')) {
+        const alias = await grab(p + '/');
+        if (alias.status === 200 && alias.type.includes('text/html')) {
+          ok(`${p} → non-canonical page URL`, false, `(use ${p}/)`);
+          queue.push(p + '/');
+        }
+      }
+      // Crawl linked HTML pages too, so links deeper in the site are covered.
+      if (r.type.includes('text/html')) queue.push(p);
     }
     if (frag) {
       const r = cache.get(key) ?? (await grab(p));
@@ -88,12 +116,19 @@ async function checkPage(path) {
 }
 
 console.log(`Crawling ${BASE}\n`);
-for (const p of SEED) {
-  await checkPage(p);
+const queue = [...SEED];
+const crawled = new Set();
+while (queue.length > 0) {
+  const path = queue.shift();
+  if (crawled.has(path)) continue;
+  crawled.add(path);
+  await checkPage(path, queue);
 }
 
 console.log(`\nExternal links (${external.size}) — not fetched, check manually:`);
 for (const u of [...external].sort()) console.log('  ', u);
 
 console.log(failures === 0 ? '\n=== NO BROKEN INTERNAL LINKS ===' : `\n=== ${failures} BROKEN REFS ===`);
-process.exit(failures ? 1 : 0);
+// Set the code instead of process.exit(): exiting while fetch handles are
+// still open can trip a libuv assertion on Windows.
+process.exitCode = failures ? 1 : 0;

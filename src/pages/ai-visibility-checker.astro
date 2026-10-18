@@ -165,7 +165,7 @@ const INTERNAL_LINKS = [
     cta: 'Read the GEO guide →',
   },
   {
-    href: '/geo-audit',
+    href: '/geo-audit/',
     label: 'GEO audit',
     title: 'GEO Audit Report',
     desc: 'A hand-reviewed audit of how AI systems see your brand, with a prioritized roadmap.',
@@ -458,7 +458,7 @@ const INTERNAL_LINKS = [
             </p>
 
             <a
-              href="/geo-audit"
+              href="/geo-audit/"
               data-track="request-geo-audit"
               data-track-label="geo-audit section CTA"
               class="mt-7 inline-flex rounded-xl bg-mint-500 px-7 py-3.5 text-sm font-bold text-ink-950 shadow-lg shadow-mint-500/20 transition-all hover:bg-mint-400"
@@ -533,8 +533,8 @@ const INTERNAL_LINKS = [
             <p class="mt-1.5 flex-1 text-[13px] leading-relaxed text-sand-500">{link.desc}</p>
             <a
               href={link.href}
-              data-track={link.href === '/geo-audit' ? 'request-geo-audit' : undefined}
-              data-track-label={link.href === '/geo-audit' ? 'next-steps card' : undefined}
+              data-track={link.href === '/geo-audit/' ? 'request-geo-audit' : undefined}
+              data-track-label={link.href === '/geo-audit/' ? 'next-steps card' : undefined}
               class="mt-4 text-xs font-bold text-mint-400 transition-colors hover:text-mint-300"
             >
               {link.cta}
