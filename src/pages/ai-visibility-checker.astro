@@ -4,11 +4,11 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 
 const PAGE_URL = 'https://www.aigeokit.com/ai-visibility-checker/';
-const title = 'AI Visibility Checker - Check Your Brand Visibility in AI Search';
+const title = 'AI Visibility Checker - Check AI Search Readiness | AIGEOKit';
 const description =
-  "Analyze your website's AI visibility and discover how ready your brand is for ChatGPT, Gemini and AI search engines.";
+  'Check the public signals that decide whether ChatGPT, Gemini, Perplexity and AI search can discover, understand and cite your site.';
 const keywords =
-  'AI Visibility Checker, AI Search Visibility Checker, ChatGPT Visibility Checker, GEO Audit Tool, AI Readiness Checker, AI Search Optimization Tool, LLM Visibility Checker';
+  'AI Visibility Checker, AI Search Readiness Checker, GEO Readiness Checker, AI Visibility Audit, AI Search Optimization Tool, LLM Visibility Checker';
 
 /* ------------------------------- Content -------------------------------- */
 
@@ -30,9 +30,9 @@ const DIMENSIONS = [
     desc: 'Evaluate whether your website is prepared to be referenced by AI answers.',
   },
   {
-    name: 'AI Presence',
-    icon: '📡',
-    desc: 'Measure your brand presence signals across AI search.',
+    name: 'AI Access',
+    icon: '🚪',
+    desc: 'Check whether AI crawlers can reach, parse and cite your pages.',
   },
 ];
 
@@ -55,9 +55,9 @@ const SCORE_ROWS = [
     note: 'Sources, authorship and clear claims are only partially in place.',
   },
   {
-    name: 'AI Presence',
+    name: 'AI Access',
     score: 18,
-    note: 'Crawler access is open; third-party mentions are still thin.',
+    note: 'Crawler access is open; llms.txt and explicit bot rules are still thin.',
   },
 ].map((row) => ({ ...row, pct: Math.round((row.score / 25) * 100) }));
 
@@ -71,7 +71,7 @@ const AUDIT_ITEMS = [
 const faqs = [
   {
     q: 'What is an AI Visibility Checker?',
-    a: 'An AI Visibility Checker is a tool that evaluates how discoverable and understandable your brand is to AI systems such as ChatGPT, Gemini, Perplexity and Google AI Overviews. Instead of counting keyword positions, it evaluates the signals answer engines actually rely on: a clearly defined brand entity, crawlable and well-structured content, citation-ready pages, and consistent brand mentions elsewhere on the web. Your AI Visibility Score collects those signals in one place so you can see which parts of your site are ready for AI search — and which are not.',
+    a: 'An AI Visibility Checker is a tool that evaluates how discoverable and understandable your brand is to AI systems such as ChatGPT, Gemini, Perplexity and Google AI Overviews. Instead of counting keyword positions, it evaluates the signals answer engines actually rely on: a clearly defined brand entity, crawlable and well-structured content, and citation-ready pages. This release scores those signals from your public homepage and site files; third-party mention analysis is part of the full GEO audit, not this free checker.',
   },
   {
     q: 'How does AI visibility affect brands?',
@@ -79,7 +79,7 @@ const faqs = [
   },
   {
     q: 'Can this tool check ChatGPT visibility?',
-    a: 'Not yet, and we want to be precise about that. This first release is a demo: you enter a website URL and we show a sample report built on our four-dimension model — Brand Entity, Content Signals, Citation Readiness and AI Presence. We deliberately do not query ChatGPT or any other assistant in the background, and we never claim to know where your brand appears inside an AI-generated answer. Live analysis, including assistant-by-assistant presence checks, is on the roadmap and will ship once this demo confirms the demand for it.',
+    a: 'This free checker measures AI readiness, not live assistant mentions. It reads your homepage HTML, robots.txt, llms.txt and sitemap.xml, then scores the four signal groups — Brand Entity, Content Signals, Citation Readiness and AI Access. It does not query ChatGPT, Gemini or Perplexity, so it cannot tell you where your brand appears inside an AI-generated answer. To see where your brand is actually mentioned, request the full GEO audit; assistant-by-assistant presence checks are also the paid L2 roadmap.',
   },
   {
     q: 'What is GEO optimization?',
@@ -88,6 +88,8 @@ const faqs = [
 ];
 
 /* --------------------------- Structured data ---------------------------- */
+
+const ORGANIZATION_ID = 'https://www.aigeokit.com/#organization';
 
 const jsonLd = [
   {
@@ -99,15 +101,48 @@ const jsonLd = [
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'All',
     browserRequirements: 'Requires JavaScript',
+    inLanguage: 'en',
+    isAccessibleForFree: true,
+    dateModified: '2026-11-01',
+    featureList: [
+      'Brand Entity analysis',
+      'Content Signals analysis',
+      'Citation Readiness analysis',
+      'AI Access analysis',
+    ],
     offers: {
       '@type': 'Offer',
       price: '0',
       priceCurrency: 'USD',
     },
-    publisher: {
+    author: {
       '@type': 'Organization',
+      '@id': ORGANIZATION_ID,
       name: 'AIGEOKit',
       url: 'https://www.aigeokit.com/',
+    },
+    publisher: {
+      '@type': 'Organization',
+      '@id': ORGANIZATION_ID,
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': ORGANIZATION_ID,
+    name: 'AIGEOKit',
+    url: 'https://www.aigeokit.com/',
+    logo: {
+      '@type': 'ImageObject',
+      // Square 180x180 icon — a social share image is not a logo.
+      url: 'https://www.aigeokit.com/apple-touch-icon.png',
+    },
+    description:
+      '100% free AI & GEO toolkit for webmasters. Generate JSON-LD schema, boost citations, and get recommended by SearchGPT, Perplexity & AI Overviews.',
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer support',
+      url: 'https://www.aigeokit.com/contact/',
     },
   },
   {
@@ -145,8 +180,8 @@ const jsonLd = [
 const chips = [
   { icon: '🤖', text: 'Built for ChatGPT, Gemini, Perplexity & AI Overviews' },
   { icon: '📊', text: '4-dimension model · 100-point scale' },
-  { icon: '🧪', text: 'Demo preview — sample report in one click' },
-  { icon: '🔒', text: 'No sign-up · nothing is sent anywhere' },
+  { icon: '📡', text: 'Live L1 check — homepage, robots.txt, llms.txt, sitemap' },
+  { icon: '🔒', text: 'No sign-up · reads public files only' },
 ];
 
 const INTERNAL_LINKS = [
@@ -196,7 +231,7 @@ const INTERNAL_LINKS = [
       <div class="mt-10 text-center sm:mt-14">
         <p class="mx-auto inline-flex items-center gap-2 rounded-full border border-ink-600 bg-ink-850 px-4 py-1.5 text-xs font-medium text-sand-400">
           <span class="text-mint-400">✦</span>
-          AI search visibility · demo preview
+          AI search visibility · live site analysis
         </p>
 
         <h1 class="mx-auto mt-6 max-w-3xl text-balance text-4xl font-extrabold leading-[1.1] tracking-tight text-sand-100 sm:text-5xl">
@@ -204,10 +239,16 @@ const INTERNAL_LINKS = [
         </h1>
 
         <p class="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-sand-400 sm:text-lg">
-          Check how visible your brand is across ChatGPT, Gemini, Perplexity and AI search engines.
+          Check how ready your site is to be discovered, understood and cited by ChatGPT, Gemini, Perplexity and AI search engines.
         </p>
 
-        <!-- Demo form: validates the URL locally, then reveals the sample report. -->
+        <p class="mx-auto mt-4 max-w-2xl text-xs leading-relaxed text-sand-500">
+          Reviewed by the
+          <a href="/about/" class="font-medium text-sand-400 underline decoration-sand-500/30 underline-offset-2 transition-colors hover:text-mint-300">AIGEOKit team</a>
+          · Last updated <time datetime="2026-11-01">November 1, 2026</time>
+        </p>
+
+        <!-- Live form: asks the edge checker for a scored report. -->
         <form id="aiv-form" novalidate class="mx-auto mt-9 w-full max-w-2xl">
           <div class="flex flex-col gap-3 rounded-2xl border border-ink-700 bg-ink-850 p-3 sm:flex-row sm:items-center">
             <label for="aiv-url" class="sr-only">Website URL</label>
@@ -218,6 +259,7 @@ const INTERNAL_LINKS = [
               inputmode="url"
               autocomplete="off"
               spellcheck="false"
+              aria-describedby="aiv-error aiv-status"
               placeholder="https://example.com"
               class="w-full flex-1 rounded-xl border border-ink-600 bg-ink-900 px-4 py-3 text-sm text-sand-100 placeholder:text-sand-500 focus:border-mint-500 focus:outline-none"
             />
@@ -229,18 +271,20 @@ const INTERNAL_LINKS = [
             </button>
           </div>
 
-          <p id="aiv-error" hidden class="mt-3 text-center text-xs font-medium text-red-300"></p>
+          <p id="aiv-error" hidden role="alert" aria-live="assertive" class="mt-3 break-words text-center text-xs font-medium text-red-300"></p>
 
-          <p id="aiv-status" hidden class="mt-3 rounded-xl border border-mint-500/30 bg-mint-500/10 px-4 py-3 text-center text-xs leading-relaxed text-mint-200">
-            <strong>Demo mode:</strong> this is a sample report for
-            <span id="aiv-demo-domain" class="font-mono font-bold">example.com</span> using illustrative
-            data — no crawl, no third-party API, no live assistant queries yet.
+          <p id="aiv-status" hidden role="status" aria-live="polite" class="mt-3 break-words rounded-xl border border-mint-500/30 bg-mint-500/10 px-4 py-3 text-center text-xs leading-relaxed text-mint-200">
+            <strong>Live check:</strong> reading
+            <span id="aiv-status-domain" class="break-all font-mono font-bold">example.com</span> — homepage,
+            robots.txt, llms.txt and sitemap.xml. This usually takes 2–10 seconds.
           </p>
 
           <p class="mt-3 text-center text-[11px] leading-relaxed text-sand-500">
-            Free preview · no login · live AI visibility analysis ships next
+            Free · no login · reads public files only · no AI assistant queries
           </p>
         </form>
+
+        <p id="aiv-announcer" class="sr-only" role="status" aria-live="polite"></p>
 
         <ul class="mx-auto mt-12 grid max-w-3xl grid-cols-1 gap-3 sm:grid-cols-2">
           {chips.map((c) => (
@@ -347,23 +391,26 @@ const INTERNAL_LINKS = [
     <!-- ===================== AI Visibility Score ===================== -->
     <section id="score" class="mx-auto max-w-7xl scroll-mt-20 px-4 py-16 sm:px-6 lg:px-8">
       <div class="mx-auto mb-10 max-w-2xl text-center">
-        <p class="text-xs font-semibold uppercase tracking-widest text-mint-400">Sample report</p>
+        <p id="aiv-report-eyebrow" class="text-xs font-semibold uppercase tracking-widest text-mint-400">Sample report</p>
         <h2 class="mt-2 text-3xl font-bold tracking-tight text-sand-100 sm:text-4xl">
           AI Visibility Score
         </h2>
-        <p class="mt-3 text-sm leading-relaxed text-sand-400">
-          This is an illustrative example of the report format — it shows how the four dimensions are
-          assessed and weighted, not a measurement of any real site.
+        <p id="aiv-report-intro" class="mt-3 break-words text-sm leading-relaxed text-sand-400">
+          This is an illustrative example of the report format. Run a check above to replace it with a
+          live report built from your site's public signals.
+        </p>
+        <p class="mt-2 text-[11px] leading-relaxed text-sand-500">
+          L1: public signals only. This release does not query ChatGPT, Gemini or Perplexity.
         </p>
       </div>
 
-      <div id="aiv-score-card" class="mx-auto max-w-3xl rounded-3xl border border-ink-700 bg-ink-850 p-7 sm:p-9">
+      <div id="aiv-sample-card" class="mx-auto max-w-3xl rounded-3xl border border-ink-700 bg-ink-850 p-7 sm:p-9">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <p class="inline-flex items-center gap-2 rounded-full border border-ink-600 bg-ink-900 px-3 py-1 text-[11px] font-semibold text-sand-400">
             <span class="font-mono">Sample report · <span id="aiv-score-domain">example.com</span></span>
           </p>
           <p class="inline-flex items-center rounded-full border border-mint-500/30 bg-mint-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-mint-300">
-            Demo data
+            Example data
           </p>
         </div>
 
@@ -393,11 +440,25 @@ const INTERNAL_LINKS = [
         </div>
 
         <p class="mt-8 border-t border-ink-700/70 pt-5 text-[12px] leading-relaxed text-sand-500">
-          Live reports will <strong class="text-sand-400">analyze</strong> and{' '}
+          Live reports <strong class="text-sand-400">analyze</strong> and{' '}
           <strong class="text-sand-400">evaluate</strong> each dimension from public signals on your
-          site; the sample above illustrates the format only. The score describes AI readiness — it is
-          not a promise of placement in any AI answer.
+          site — homepage HTML, robots.txt, llms.txt and sitemap.xml. The sample above illustrates the
+          format only. The score describes AI readiness — it is not a promise of placement in any AI
+          answer.
         </p>
+      </div>
+
+      <!-- Live report: populated by aiVisibilityApp.ts after /api/visibility-check. -->
+      <div
+        id="aiv-live-card"
+        hidden
+        role="region"
+        aria-label="AI visibility report"
+        aria-busy="false"
+        tabindex="-1"
+        class="mx-auto max-w-3xl scroll-mt-24 rounded-3xl border border-ink-700 bg-ink-850 p-7 focus-visible:ring-2 focus-visible:ring-mint-500/40 sm:p-9"
+      >
+        <div id="aiv-live-body"></div>
       </div>
     </section>
 
@@ -434,6 +495,40 @@ const INTERNAL_LINKS = [
             <p class="mt-2 text-[13px] leading-relaxed text-sand-400">{card.d}</p>
           </div>
         ))}
+      </div>
+    </section>
+
+    <!-- ===================== Sources ===================== -->
+    <section id="sources" class="mx-auto max-w-7xl scroll-mt-20 px-4 pb-16 pt-0 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-3xl rounded-2xl border border-ink-700 bg-ink-850 p-6 sm:p-8">
+        <p class="text-xs font-semibold uppercase tracking-widest text-mint-400">Sources & further reading</p>
+        <h2 class="mt-2 text-xl font-bold tracking-tight text-sand-100 sm:text-2xl">
+          Where these signals come from
+        </h2>
+        <p class="mt-2 text-[13px] leading-relaxed text-sand-400">
+          The checks and recommendations on this page follow public documentation from the search and
+          AI platforms. Cite them when you audit your own site.
+        </p>
+        <ul class="mt-4 space-y-2.5 text-[13px] leading-relaxed text-sand-400">
+          <li>
+            <a href="https://developers.google.com/search/docs/appearance/ai-features" target="_blank" rel="noopener" class="font-semibold text-mint-400 underline decoration-mint-500/40 underline-offset-2 hover:text-mint-300">Google Search Central — AI features and your website</a>
+            — how AI Overviews and AI Mode use Google Search.
+          </li>
+          <li>
+            <a href="https://developers.google.com/search/docs/crawling-indexing/overview-google-crawlers" target="_blank" rel="noopener" class="font-semibold text-mint-400 underline decoration-mint-500/40 underline-offset-2 hover:text-mint-300">Google Search Central — Google crawlers overview</a>
+            — which user agents fetch pages for search and AI features.
+          </li>
+          <li>
+            <a href="https://platform.openai.com/docs/bots" target="_blank" rel="noopener" class="font-semibold text-mint-400 underline decoration-mint-500/40 underline-offset-2 hover:text-mint-300">OpenAI — Bots</a>
+            — GPTBot, OAI-SearchBot and ChatGPT-User behavior.
+          </li>
+          <li>
+            <a href="https://schema.org/Organization" target="_blank" rel="noopener" class="font-semibold text-mint-400 underline decoration-mint-500/40 underline-offset-2 hover:text-mint-300">Schema.org — Organization</a>
+            and
+            <a href="https://schema.org/FAQPage" target="_blank" rel="noopener" class="font-semibold text-mint-400 underline decoration-mint-500/40 underline-offset-2 hover:text-mint-300">FAQPage</a>
+            — the entity and answer markup this checker looks for.
+          </li>
+        </ul>
       </div>
     </section>
 
@@ -553,7 +648,7 @@ const INTERNAL_LINKS = [
 </Layout>
 
 <style>
-  /* Draws the eye to the sample report after the demo form is submitted. */
+  /* Draws the eye to the report after a live check completes. */
   .aiv-reveal {
     animation: aiv-pulse 1.6s ease-out;
   }

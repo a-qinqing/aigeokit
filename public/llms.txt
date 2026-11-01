@@ -1,6 +1,6 @@
 # AIGEOKit
 
-> Free, privacy-first Generative Engine Optimization (GEO) tools running 100% client-side.
+> Free, privacy-first Generative Engine Optimization (GEO) tools. Most run entirely in your browser; URL-based checks use our first-party edge proxy to read public files.
 
 ## Core Tools
 
@@ -11,5 +11,5 @@
 
 ## Products
 
-- [AI Visibility Checker](https://www.aigeokit.com/ai-visibility-checker/): Evaluate how discoverable a brand is across ChatGPT, Gemini, Perplexity and AI search. Explains the four-dimension AI visibility model (Brand Entity, Content Signals, Citation Readiness, AI Presence) with a sample 100-point score report. Demo preview — live analysis coming soon.
+- [AI Visibility Checker](https://www.aigeokit.com/ai-visibility-checker/): Runs a live L1 analysis of a public homepage, robots.txt, llms.txt and sitemap.xml, then scores four signal groups (Brand Entity, Content Signals, Citation Readiness, AI Access) on a 100-point scale. Does not query ChatGPT, Gemini or Perplexity; AI-answer mention checks are the L2 roadmap.
 - [GEO Audit Report](https://www.aigeokit.com/geo-audit/): Request a hand-reviewed audit of how AI systems see a brand — AI visibility analysis, competitor comparison, citation opportunities and an optimization roadmap.

@@ -1,0 +1,265 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const PAGE_URL = 'https://www.aigeokit.com/about/';
+const title = 'About AIGEOKit - Free GEO & AI Search Tools';
+const description =
+  'What AIGEOKit is, which free GEO and AI search visibility tools it offers, how each check works, and what the results can and cannot tell you.';
+
+const TOOLS = [
+  {
+    title: 'JSON-LD Schema Generator & GEO Checklist',
+    href: '/tools/schema-generator/',
+    desc: 'Builds production-ready JSON-LD for 8 schema types and scores the entity signals in your markup against a rule-based GEO checklist. Runs entirely in your browser.',
+  },
+  {
+    title: 'AI Robots.txt & Crawler Access Checker',
+    href: '/tools/ai-robots-txt-checker/',
+    desc: 'Parses a public robots.txt and reports how 9 monitored AI crawlers are treated, with a weighted 0–100 AI Crawlability score. URL mode uses our first-party proxy; paste mode stays local.',
+  },
+  {
+    title: 'llms.txt Generator & Validator',
+    href: '/tools/llm-txt-builder/',
+    desc: 'Creates and validates llms.txt / llms-full.txt files. Generation and pasted-content validation are local; sitemap import and live-file checks use our first-party proxy to read public files.',
+  },
+  {
+    title: 'AI Visibility Checker',
+    href: '/ai-visibility-checker/',
+    desc: 'Runs a live L1 analysis of a public homepage, robots.txt, llms.txt and sitemap.xml, then scores four signal groups: Brand Entity, Content Signals, Citation Readiness and AI Access. It does not query AI assistants.',
+  },
+  {
+    title: 'GEO Audit Report',
+    href: '/geo-audit/',
+    desc: 'A hand-reviewed audit of how AI systems currently read a brand, requested by form. Scope and pricing are confirmed by email before any work starts.',
+  },
+];
+
+const LIMITATIONS = [
+  'The robots.txt checker covers a fixed list of 9 crawlers. Crawlers outside that list are not evaluated.',
+  'A robots.txt score describes the rules a site publishes, not whether every crawler actually obeys them or how often it visits.',
+  'llms.txt is an emerging convention. Support varies between AI products, and a valid file is not a guarantee of inclusion.',
+  'Schema generation produces syntactically valid JSON-LD, but it cannot guarantee rich results or AI citations. Validate output with the search engine tools you rely on.',
+  'The AI Visibility Checker analyzes the homepage and public files only. It does not query ChatGPT, Gemini or Perplexity and does not measure live brand mentions in AI answers.',
+  'The GEO Audit is a manual, request-based service. Scope is agreed per site, and no ranking outcome is promised.',
+];
+---
+
+<Layout title={title} description={description} canonical={PAGE_URL} jsonLd={[
+  {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    name: 'About AIGEOKit',
+    url: PAGE_URL,
+    description,
+    publisher: {
+      '@type': 'Organization',
+      '@id': 'https://www.aigeokit.com/#organization',
+      name: 'AIGEOKit',
+      url: 'https://www.aigeokit.com/',
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.aigeokit.com/' },
+      { '@type': 'ListItem', position: 2, name: 'About', item: PAGE_URL },
+    ],
+  },
+]}>
+  <Header />
+
+  <main>
+    <!-- ============================ Hero ============================ -->
+    <section class="relative overflow-hidden">
+      <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+        <div class="absolute -top-32 left-1/2 h-[420px] w-[860px] -translate-x-1/2 rounded-full bg-mint-500/10 blur-[120px]"></div>
+      </div>
+
+      <div class="relative mx-auto max-w-7xl px-4 pb-12 pt-10 sm:px-6 lg:px-8">
+        <!-- Breadcrumb: Home → About -->
+        <nav aria-label="Breadcrumb" class="text-xs text-sand-500">
+          <ol class="flex flex-wrap items-center gap-1.5">
+            <li><a href="/" class="font-medium transition-colors hover:text-mint-300">Home</a></li>
+            <li aria-hidden="true" class="text-sand-600">/</li>
+            <li aria-current="page" class="font-semibold text-sand-300">About</li>
+          </ol>
+        </nav>
+
+        <div class="mt-10 max-w-3xl">
+          <p class="inline-flex items-center gap-2 rounded-full border border-mint-500/30 bg-mint-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-mint-300">
+            Independent project
+          </p>
+          <h1 class="mt-5 text-balance text-4xl font-extrabold leading-[1.1] tracking-tight text-sand-100 sm:text-5xl">
+            About AIGEOKit
+          </h1>
+          <p class="mt-5 text-pretty text-base leading-relaxed text-sand-300 sm:text-lg">
+            AIGEOKit is a free, independent toolkit for Generative Engine Optimization (GEO) and AI
+            search visibility. It helps webmasters and SEOs inspect the signals AI answer engines
+            rely on — crawl access, entities, structured data and citable content — without an
+            account, a subscription or a paywall.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== What it is / why ===================== -->
+    <section class="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div class="rounded-3xl border border-ink-700 bg-ink-850 p-8">
+          <h2 class="text-xl font-bold tracking-tight text-sand-100">What AIGEOKit is</h2>
+          <p class="mt-3 text-sm leading-relaxed text-sand-400">
+            AIGEOKit is a small web project focused on practical GEO tooling. Most checks run
+            directly in your browser: your inputs are processed locally and are not uploaded to us.
+            A few checks need to read a public file from another site — robots.txt, llms.txt or a
+            sitemap — so they go through a first-party edge endpoint that fetches only that public
+            file on your behalf.
+          </p>
+          <p class="mt-3 text-sm leading-relaxed text-sand-400">
+            There is no login, no newsletter and no payment flow. The tools are free to use.
+          </p>
+        </div>
+
+        <div class="rounded-3xl border border-ink-700 bg-ink-850 p-8">
+          <h2 class="text-xl font-bold tracking-tight text-sand-100">The problem it addresses</h2>
+          <p class="mt-3 text-sm leading-relaxed text-sand-400">
+            AI answer engines such as ChatGPT search, Perplexity, Google AI Overviews and Copilot
+            decide which sources to cite based on signals most sites never look at directly: whether
+            their crawlers are allowed in, whether the brand is a clearly defined entity, whether
+            structured data is consistent, and whether a page contains facts that can be quoted.
+          </p>
+          <p class="mt-3 text-sm leading-relaxed text-sand-400">
+            AIGEOKit turns those signals into inspectable checks and plain-language fixes, so they
+            can be reviewed and improved like any other technical SEO item.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== What is available ===================== -->
+    <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <p class="text-xs font-semibold uppercase tracking-widest text-mint-400">Available today</p>
+      <h2 class="mt-2 text-2xl font-bold tracking-tight text-sand-100 sm:text-3xl">
+        What AIGEOKit currently offers
+      </h2>
+
+      <div class="mt-6 space-y-3">
+        {TOOLS.map((tool) => (
+          <div class="rounded-2xl border border-ink-700 bg-ink-850 p-6">
+            <h3 class="text-[15px] font-bold text-sand-100">
+              <a href={tool.href} class="transition-colors hover:text-mint-300">{tool.title}</a>
+            </h3>
+            <p class="mt-2 text-[13px] leading-relaxed text-sand-400">{tool.desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ===================== How checks work ===================== -->
+    <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div class="rounded-3xl border border-mint-500/25 bg-gradient-to-br from-mint-500/10 via-ink-850 to-ink-850 p-8 sm:p-10">
+        <p class="text-xs font-semibold uppercase tracking-widest text-mint-400">Method</p>
+        <h2 class="mt-2 text-2xl font-bold tracking-tight text-sand-100 sm:text-3xl">
+          How the checks work
+        </h2>
+
+        <div class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div>
+            <h3 class="text-sm font-bold text-sand-100">robots.txt analysis</h3>
+            <p class="mt-2 text-[13px] leading-relaxed text-sand-400">
+              The checker parses the rules a site publishes, resolves wildcard user-agent groups,
+              and evaluates each of the 9 monitored crawlers as explicitly allowed, blocked, or
+              allowed only by default. The 0–100 score weights AI search crawlers highest, then
+              user-triggered fetchers, then training crawlers; a fully explicit allow scores 100,
+              while an unmentioned crawler counts as half.
+            </p>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-sand-100">Schema and entity checklist</h3>
+            <p class="mt-2 text-[13px] leading-relaxed text-sand-400">
+              The generator builds JSON-LD for 8 schema types and runs a rule-based checklist over
+              the resulting markup — publisher and author identity, sameAs links, citations, dates,
+              images and canonical URLs. It reports what is present and what is missing; it does not
+              score how a search engine will rank the page.
+            </p>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-sand-100">llms.txt validation</h3>
+            <p class="mt-2 text-[13px] leading-relaxed text-sand-400">
+              The validator checks structure: a single H1, a summary line, markdown links in the
+              expected form, HTTPS URLs, descriptions, duplicates and the optional llms-full.txt
+              reference. These are document-format rules, not a guarantee that an AI product reads
+              the file.
+            </p>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-sand-100">AI Visibility Checker</h3>
+            <p class="mt-2 text-[13px] leading-relaxed text-sand-400">
+              The checker runs a live L1 analysis: it reads the homepage HTML, robots.txt, llms.txt
+              and sitemap.xml through our edge endpoint and scores four signal groups — brand entity,
+              content signals, citation readiness and AI access. It does not query AI assistants, so
+              it describes AI readiness and crawler access rather than live brand mentions.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== How to read results ===================== -->
+    <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight text-sand-100">How to read the results</h2>
+          <p class="mt-3 text-sm leading-relaxed text-sand-400">
+            Treat every output as a diagnostic signal, not a verdict. The checks describe what a
+            site publishes and how consistently it publishes it. They cannot predict what an AI
+            answer engine will say, because answers vary by engine, query, language, region and
+            time.
+          </p>
+          <p class="mt-3 text-sm leading-relaxed text-sand-400">
+            The most useful workflow is: run a check, fix the concrete gaps it finds, then test the
+            result in the engine you care about. A high score is a clean starting point, not a
+            ranking guarantee.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight text-sand-100">Known limitations</h2>
+          <ul class="mt-3 space-y-2">
+            {LIMITATIONS.map((item) => (
+              <li class="flex gap-3 text-[13px] leading-relaxed text-sand-400">
+                <span aria-hidden="true" class="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-md bg-ink-800 text-[10px] font-bold text-sand-500 ring-1 ring-ink-600">
+                  !
+                </span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== Feedback ===================== -->
+    <section class="mx-auto max-w-7xl px-4 pb-24 pt-4 sm:px-6 lg:px-8">
+      <div class="rounded-3xl border border-ink-700 bg-ink-850 p-8 text-center sm:p-10">
+        <h2 class="text-2xl font-bold tracking-tight text-sand-100">Found something wrong?</h2>
+        <p class="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-sand-400">
+          If a check reports something misleading, a crawler is missing, or a page needs a
+          correction, tell us. Feedback directly shapes what gets fixed next.
+        </p>
+        <div class="mt-6 flex flex-wrap justify-center gap-3">
+          <a href="/contact/" class="rounded-xl bg-mint-500 px-6 py-2.5 text-xs font-bold text-ink-950 transition-colors hover:bg-mint-400">
+            Contact AIGEOKit →
+          </a>
+          <a href="/geo-audit/" class="rounded-xl border border-ink-600 bg-ink-900 px-6 py-2.5 text-xs font-bold text-sand-200 transition-colors hover:border-mint-500/40 hover:text-sand-100">
+            Request a GEO audit →
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>

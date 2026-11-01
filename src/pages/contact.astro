@@ -1,0 +1,196 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const PAGE_URL = 'https://www.aigeokit.com/contact/';
+const title = 'Contact AIGEOKit - Feedback & Privacy Requests';
+const description =
+  'Contact AIGEOKit with tool feedback, corrections, privacy questions or a GEO audit request. Send a message through the form or open a GEO audit request.';
+
+const REASONS = [
+  {
+    title: 'Tool feedback and corrections',
+    desc: 'A checker result looks wrong, a crawler is missing, or a page has an error. Tell us what you saw and where.',
+  },
+  {
+    title: 'Privacy requests',
+    desc: 'Ask about, correct or delete information you submitted through this site. Include the email address you used so we can find it.',
+  },
+  {
+    title: 'General questions',
+    desc: 'Questions about how a tool works, what a result means, or whether a check covers your use case.',
+  },
+];
+---
+
+<Layout title={title} description={description} canonical={PAGE_URL} jsonLd={[
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    name: 'Contact AIGEOKit',
+    url: PAGE_URL,
+    description,
+    publisher: {
+      '@type': 'Organization',
+      '@id': 'https://www.aigeokit.com/#organization',
+      name: 'AIGEOKit',
+      url: 'https://www.aigeokit.com/',
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.aigeokit.com/' },
+      { '@type': 'ListItem', position: 2, name: 'Contact', item: PAGE_URL },
+    ],
+  },
+]}>
+  <Header />
+
+  <main>
+    <!-- ============================ Hero ============================ -->
+    <section class="relative overflow-hidden">
+      <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+        <div class="absolute -top-32 left-1/2 h-[420px] w-[860px] -translate-x-1/2 rounded-full bg-mint-500/10 blur-[120px]"></div>
+      </div>
+
+      <div class="relative mx-auto max-w-7xl px-4 pb-12 pt-10 sm:px-6 lg:px-8">
+        <!-- Breadcrumb: Home → Contact -->
+        <nav aria-label="Breadcrumb" class="text-xs text-sand-500">
+          <ol class="flex flex-wrap items-center gap-1.5">
+            <li><a href="/" class="font-medium transition-colors hover:text-mint-300">Home</a></li>
+            <li aria-hidden="true" class="text-sand-600">/</li>
+            <li aria-current="page" class="font-semibold text-sand-300">Contact</li>
+          </ol>
+        </nav>
+
+        <div class="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-14">
+          <!-- Intro -->
+          <div>
+            <p class="inline-flex items-center gap-2 rounded-full border border-mint-500/30 bg-mint-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-mint-300">
+              Get in touch
+            </p>
+            <h1 class="mt-5 text-balance text-4xl font-extrabold leading-[1.1] tracking-tight text-sand-100 sm:text-5xl">
+              Contact AIGEOKit
+            </h1>
+            <p class="mt-4 max-w-xl text-pretty text-base leading-relaxed text-sand-300 sm:text-lg">
+              Questions about a tool, a correction, a privacy request or a GEO audit? Send a message
+              below and we will reply by email.
+            </p>
+
+            <div class="mt-8 space-y-3">
+              {REASONS.map((reason) => (
+                <div class="rounded-2xl border border-ink-700 bg-ink-850 p-5">
+                  <h2 class="text-sm font-bold text-sand-100">{reason.title}</h2>
+                  <p class="mt-1.5 text-[13px] leading-relaxed text-sand-400">{reason.desc}</p>
+                </div>
+              ))}
+            </div>
+
+            <div class="mt-6 rounded-2xl border border-mint-500/25 bg-mint-500/5 p-5">
+              <h2 class="text-sm font-bold text-sand-100">Want a full review of your site?</h2>
+              <p class="mt-1.5 text-[13px] leading-relaxed text-sand-400">
+                The GEO Audit Report is a separate, hand-reviewed service. Scope and pricing are
+                confirmed by email before anything starts.
+              </p>
+              <a href="/geo-audit/" class="mt-3 inline-flex text-xs font-bold text-mint-400 transition-colors hover:text-mint-300">
+                Request a GEO audit →
+              </a>
+            </div>
+          </div>
+
+          <!-- Message form -->
+          <div>
+            <div class="relative rounded-3xl border border-ink-700 bg-ink-850 p-7 sm:p-8">
+              <h2 class="text-lg font-bold tracking-tight text-sand-100">Send a message</h2>
+              <p class="mt-1.5 text-[13px] leading-relaxed text-sand-500">
+                Two fields. We use your email only to reply.
+              </p>
+
+              <form id="ct-form" novalidate class="mt-6">
+                <!-- Honeypot: hidden from humans, tempting to bots. -->
+                <div aria-hidden="true" class="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+                  <label for="ct-company">Company</label>
+                  <input id="ct-company" type="text" name="company" tabindex="-1" autocomplete="off" />
+                </div>
+
+                <div class="flex flex-col gap-2">
+                  <label for="ct-email" class="text-sm font-bold text-sand-100">Email *</label>
+                  <input
+                    id="ct-email"
+                    type="email"
+                    name="email"
+                    autocomplete="email"
+                    spellcheck="false"
+                    placeholder="you@company.com"
+                    class="w-full rounded-xl border border-ink-600 bg-ink-900 px-4 py-2.5 text-sm text-sand-100 placeholder:text-sand-500 focus:border-mint-500 focus:outline-none"
+                  />
+                </div>
+
+                <div class="mt-5 flex flex-col gap-2">
+                  <label for="ct-message" class="text-sm font-bold text-sand-100">Message *</label>
+                  <textarea
+                    id="ct-message"
+                    name="message"
+                    rows="6"
+                    maxlength="1000"
+                    placeholder="What would you like to ask or report?"
+                    class="w-full resize-y rounded-xl border border-ink-600 bg-ink-900 px-4 py-2.5 text-sm text-sand-100 placeholder:text-sand-500 focus:border-mint-500 focus:outline-none"
+                  ></textarea>
+                </div>
+
+                <p id="ct-error" hidden class="mt-4 text-xs font-medium text-red-300"></p>
+
+                <button
+                  id="ct-submit"
+                  type="submit"
+                  class="mt-6 w-full rounded-xl bg-mint-500 px-7 py-3.5 text-sm font-bold text-ink-950 shadow-lg shadow-mint-500/20 transition-all hover:bg-mint-400 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  Send message
+                </button>
+
+                <p class="mt-3 text-[11px] leading-relaxed text-sand-500">
+                  Messages go to our first-party endpoint and are forwarded to the team. We do not
+                  add you to a newsletter. See the
+                  <a href="/privacy/" class="font-semibold text-mint-400 underline decoration-mint-500/40 underline-offset-2 transition-colors hover:text-mint-300">Privacy Policy</a>.
+                </p>
+              </form>
+
+              <!-- Confirmation panel, revealed by contactApp.ts -->
+              <div id="ct-success" tabindex="-1" hidden class="mt-6 rounded-2xl border border-mint-500/30 bg-mint-500/10 p-6 outline-none">
+                <p class="text-sm font-bold text-mint-200">✓ Message sent</p>
+                <p class="mt-2 text-[13px] leading-relaxed text-sand-300">
+                  Thanks — we will reply to
+                  <span id="ct-success-email" class="font-mono font-bold text-sand-100"></span>.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== Privacy note ===================== -->
+    <section class="mx-auto max-w-7xl px-4 pb-24 pt-4 sm:px-6 lg:px-8">
+      <div class="rounded-3xl border border-ink-700 bg-ink-850 p-8 sm:p-10">
+        <h2 class="text-xl font-bold tracking-tight text-sand-100">What happens to your message</h2>
+        <p class="mt-3 max-w-3xl text-sm leading-relaxed text-sand-400">
+          Your email address and message are sent to AIGEOKit's own endpoint and forwarded to the
+          messaging channel that receives site inquiries. The site does not keep a separate database
+          of submissions. You can ask us to delete a message at any time using the same form.
+        </p>
+        <a href="/privacy/" class="mt-4 inline-flex text-xs font-bold text-mint-400 transition-colors hover:text-mint-300">
+          Read the full Privacy Policy →
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script>
+    import '../lib/contactApp.ts';
+  </script>
+</Layout>

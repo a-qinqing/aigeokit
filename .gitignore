@@ -23,6 +23,9 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
+# local Cloudflare / Wrangler state
+.wrangler/
+
 # requirement / spec docs (keep local, out of the public repo)
 /指令.txt
 /指令1.txt

@@ -1,0 +1,264 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const PAGE_URL = 'https://www.aigeokit.com/privacy/';
+const title = 'Privacy Policy | AIGEOKit';
+const description =
+  'How AIGEOKit handles data: analytics and cookies, the GEO Audit and contact forms, URL checks that use our edge proxy, third-party services and your choices.';
+const LAST_UPDATED = 'October 18, 2026';
+---
+
+<Layout title={title} description={description} canonical={PAGE_URL} jsonLd={[
+  {
+    '@context': 'https://schema.org',
+    '@type': 'PrivacyPolicy',
+    name: 'Privacy Policy',
+    url: PAGE_URL,
+    description,
+    dateModified: '2026-10-18',
+    publisher: {
+      '@type': 'Organization',
+      '@id': 'https://www.aigeokit.com/#organization',
+      name: 'AIGEOKit',
+      url: 'https://www.aigeokit.com/',
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.aigeokit.com/' },
+      { '@type': 'ListItem', position: 2, name: 'Privacy Policy', item: PAGE_URL },
+    ],
+  },
+]}>
+  <Header />
+
+  <main>
+    <section class="relative overflow-hidden">
+      <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+        <div class="absolute -top-32 left-1/2 h-[420px] w-[860px] -translate-x-1/2 rounded-full bg-mint-500/10 blur-[120px]"></div>
+      </div>
+
+      <div class="relative mx-auto max-w-7xl px-4 pb-10 pt-10 sm:px-6 lg:px-8">
+        <!-- Breadcrumb: Home → Privacy Policy -->
+        <nav aria-label="Breadcrumb" class="text-xs text-sand-500">
+          <ol class="flex flex-wrap items-center gap-1.5">
+            <li><a href="/" class="font-medium transition-colors hover:text-mint-300">Home</a></li>
+            <li aria-hidden="true" class="text-sand-600">/</li>
+            <li aria-current="page" class="font-semibold text-sand-300">Privacy Policy</li>
+          </ol>
+        </nav>
+
+        <div class="mt-10 max-w-3xl">
+          <p class="inline-flex items-center gap-2 rounded-full border border-ink-600 bg-ink-850 px-3 py-1 text-[11px] font-medium text-sand-400">
+            Last updated: {LAST_UPDATED}
+          </p>
+          <h1 class="mt-5 text-balance text-4xl font-extrabold leading-[1.1] tracking-tight text-sand-100 sm:text-5xl">
+            Privacy Policy
+          </h1>
+          <p class="mt-5 text-pretty text-base leading-relaxed text-sand-300 sm:text-lg">
+            This page describes how AIGEOKit handles information when you use
+            <span class="font-semibold text-sand-100">aigeokit.com</span>. It is based on what the
+            site's code and configuration actually do, not on a generic template.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="mx-auto max-w-3xl px-4 pb-24 sm:px-6 lg:px-8">
+      <div class="space-y-10 text-sm leading-relaxed text-sand-400">
+
+        <section>
+          <h2 class="text-xl font-bold tracking-tight text-sand-100">1. Who we are</h2>
+          <p class="mt-3">
+            AIGEOKit is an independent website offering free GEO and AI search visibility tools, plus
+            an optional hand-reviewed GEO Audit service. For privacy questions, use the
+            <a href="/contact/" class="font-semibold text-mint-400 underline decoration-mint-500/40 underline-offset-2 hover:text-mint-300">contact page</a>.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold tracking-tight text-sand-100">2. Information you submit</h2>
+
+          <h3 class="mt-4 font-bold text-sand-200">GEO Audit request form</h3>
+          <p class="mt-2">
+            The form at <a href="/geo-audit/" class="font-semibold text-mint-400 underline decoration-mint-500/40 underline-offset-2 hover:text-mint-300">/geo-audit/</a>
+            collects your email address (required) and an optional website address. When you submit
+            it, our server-side endpoint also records the page URL, the HTTP referer and a
+            timestamp. The form includes a hidden honeypot field that real visitors never fill in.
+          </p>
+
+          <h3 class="mt-5 font-bold text-sand-200">Contact form</h3>
+          <p class="mt-2">
+            The form at <a href="/contact/" class="font-semibold text-mint-400 underline decoration-mint-500/40 underline-offset-2 hover:text-mint-300">/contact/</a>
+            collects your email address and a message (both required). The same server-side
+            endpoint records the page URL, HTTP referer and a timestamp, and includes a honeypot
+            field.
+          </p>
+
+          <h3 class="mt-5 font-bold text-sand-200">How submissions are delivered</h3>
+          <p class="mt-2">
+            Both forms post to AIGEOKit's own endpoint, <code class="text-sand-300">/api/geo-audit-lead</code>,
+            which forwards the submission to the messaging or form webhook configured for the site
+            (for example a Lark/Feishu or Slack bot, Zapier, or Formspree). The site does not write
+            submissions to a database or key-value store. If that webhook is not configured, the
+            endpoint writes the submission to the Cloudflare Pages function log instead of
+            delivering it.
+          </p>
+          <p class="mt-2">
+            We use this information only to reply to your request. We do not add form submissions to
+            a newsletter, and we do not sell or rent them.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold tracking-tight text-sand-100">3. Tool inputs</h2>
+
+          <h3 class="mt-4 font-bold text-sand-200">Checks that run entirely in your browser</h3>
+          <p class="mt-2">
+            The JSON-LD Schema Generator and GEO Checklist, llms.txt generation and pasted-content
+            validation all run locally in your browser. The content you type or generate in those
+            tools is not sent to AIGEOKit.
+          </p>
+
+          <h3 class="mt-5 font-bold text-sand-200">Checks that read a public file</h3>
+          <p class="mt-2">
+            Some features need to read a public file from another site, which browsers normally
+            cannot do because of cross-origin restrictions. Those features send the URL or hostname
+            you enter to one of AIGEOKit's own edge endpoints:
+          </p>
+          <ul class="mt-3 list-disc space-y-2 pl-5">
+            <li><code class="text-sand-300">/api/check-robots</code> — reads the site's public robots.txt.</li>
+            <li><code class="text-sand-300">/api/check-llms-txt</code> — reads the site's public /llms.txt.</li>
+            <li><code class="text-sand-300">/api/fetch-sitemap</code> — reads the public sitemap URL you provide.</li>
+            <li><code class="text-sand-300">/api/visibility-check</code> — reads a site's homepage, robots.txt, llms.txt and sitemap.xml to score AI visibility.</li>
+          </ul>
+          <p class="mt-3">
+            These endpoints fetch only the public files needed for the check and return the result to
+            your browser. Our code does not write the requested URL or the returned content to a
+            database. The AI Visibility Checker report is cached at Cloudflare's edge for up to six
+            hours so repeat checks do not re-crawl the site. Cloudflare, as the hosting provider, may
+            process standard request metadata such as IP address, user agent and timestamps in its
+            operational logs.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold tracking-tight text-sand-100">4. Analytics and cookies</h2>
+
+          <h3 class="mt-4 font-bold text-sand-200">Google Tag Manager</h3>
+          <p class="mt-2">
+            Every page loads the Google Tag Manager container <code class="text-sand-300">GTM-WNTXT2ZV</code>.
+            Google Tag Manager is a tag-management system: the tags configured inside the container
+            can load analytics or marketing services, which may set cookies and collect usage data
+            such as page views, device and browser information, and approximate location. The
+            specific tags are controlled by the container configuration.
+          </p>
+          <p class="mt-2">
+            AIGEOKit pushes non-personal events to the Tag Manager data layer — for example
+            <code class="text-sand-300">request_geo_audit_click</code>,
+            <code class="text-sand-300">analyze_visibility_click</code>,
+            <code class="text-sand-300">lead_submit</code> and
+            <code class="text-sand-300">contact_submit</code> — with the page path and status flags.
+            These events do not include your email address, your message, or the URL you enter into
+            the AI Visibility Checker.
+          </p>
+
+          <h3 class="mt-5 font-bold text-sand-200">First-party cookies and storage</h3>
+          <p class="mt-2">
+            The site's own code does not set cookies and does not use localStorage, sessionStorage
+            or IndexedDB. The tools work without cookies.
+          </p>
+
+          <h3 class="mt-5 font-bold text-sand-200">Your choices</h3>
+          <p class="mt-2">
+            You can block or delete cookies in your browser settings. Because the free tools do not
+            depend on cookies, blocking them does not break the tools. For details on the services
+            loaded through Tag Manager, see
+            <a href="https://policies.google.com/privacy" rel="noopener" class="font-semibold text-mint-400 underline decoration-mint-500/40 underline-offset-2 hover:text-mint-300">Google's privacy policy</a>.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold tracking-tight text-sand-100">5. Hosting and third parties</h2>
+          <p class="mt-3">
+            AIGEOKit is hosted on Cloudflare Pages and uses Cloudflare Pages Functions for the
+            endpoints described above. Cloudflare processes requests on our behalf and may keep
+            operational and security logs under its own policies; see
+            <a href="https://www.cloudflare.com/privacypolicy/" rel="noopener" class="font-semibold text-mint-400 underline decoration-mint-500/40 underline-offset-2 hover:text-mint-300">Cloudflare's privacy policy</a>.
+          </p>
+          <p class="mt-2">
+            The third-party services that may process data in connection with this site are:
+          </p>
+          <ul class="mt-3 list-disc space-y-2 pl-5">
+            <li>Cloudflare — hosting, request delivery and edge functions.</li>
+            <li>Google — Tag Manager and any tags configured in the container.</li>
+            <li>The messaging or form webhook that receives GEO Audit and contact submissions.</li>
+          </ul>
+          <p class="mt-3">
+            These providers may process data in countries other than yours. We do not sell or rent
+            information submitted through this site.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold tracking-tight text-sand-100">6. Retention and deletion</h2>
+          <p class="mt-3">
+            The site itself has no database. Form submissions exist in the receiving inbox or
+            messaging workspace, and no fixed retention period has been set. They are kept so the
+            request can be handled and are deleted when no longer needed, or when you ask us to
+            delete them. Analytics data is retained according to the tags configured in Tag Manager
+            and the policies of the services they load.
+          </p>
+          <p class="mt-2">
+            To ask us to delete information you submitted, use the
+            <a href="/contact/" class="font-semibold text-mint-400 underline decoration-mint-500/40 underline-offset-2 hover:text-mint-300">contact form</a>
+            and include the email address you used.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold tracking-tight text-sand-100">7. Your choices and requests</h2>
+          <p class="mt-3">
+            You can ask us to access, correct or delete the information you submitted through the
+            audit or contact forms. Use the contact form and tell us what you need; we may ask you to
+            verify that you control the email address involved. Because there is no account system,
+            there is no profile to close.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold tracking-tight text-sand-100">8. Children</h2>
+          <p class="mt-3">
+            The site is not directed at children under 13, and we do not knowingly collect their
+            personal information. If you believe a child has submitted information, contact us and
+            we will remove it.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold tracking-tight text-sand-100">9. Changes to this policy</h2>
+          <p class="mt-3">
+            If the site's data practices change, this page will be updated and the date at the top
+            will change. The current version always reflects the site as it is configured at that
+            time.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold tracking-tight text-sand-100">10. Contact</h2>
+          <p class="mt-3">
+            For any privacy question or request, use the
+            <a href="/contact/" class="font-semibold text-mint-400 underline decoration-mint-500/40 underline-offset-2 hover:text-mint-300">contact form</a>.
+            Please include the email address you used so we can locate your submission.
+          </p>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>

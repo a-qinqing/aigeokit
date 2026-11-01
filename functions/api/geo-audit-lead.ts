@@ -20,7 +20,12 @@ const WEBHOOK_TIMEOUT_MS = 6_000;
 /** Pragmatic shape check — the webhook destination is the real validator. */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
 
-type ApiErrorCode = 'invalid-body' | 'invalid-email' | 'spam' | 'forward-failed';
+type ApiErrorCode =
+  | 'invalid-body'
+  | 'invalid-email'
+  | 'invalid-message'
+  | 'spam'
+  | 'forward-failed';
 
 interface ApiOk {
   ok: true;
@@ -54,6 +59,7 @@ function clean(value: unknown, maxLength: number): string {
 }
 
 interface Lead {
+  kind: 'audit' | 'contact';
   email: string;
   website: string;
   note: string;
@@ -69,12 +75,15 @@ function isLarkWebhook(url: string): boolean {
 }
 
 function buildPayload(webhook: string, lead: Lead): Record<string, unknown> {
-  const text = [
-    `New GEO Audit request — ${lead.email}`,
+  const heading = lead.kind === 'contact' ? 'New Contact message' : 'New GEO Audit request';
+  const lines = [
+    `${heading} — ${lead.email}`,
     lead.website ? `Website: ${lead.website}` : 'Website: (not given)',
-    `Received: ${lead.received_at}`,
-  ].join('\n');
+  ];
+  if (lead.note) lines.push(`Message: ${lead.note}`);
+  lines.push(`Received: ${lead.received_at}`);
 
+  const text = lines.join('\n');
   if (isLarkWebhook(webhook)) return { msg_type: 'text', content: { text } };
   return { text, lead };
 }
@@ -105,6 +114,8 @@ function rejectionReason(status: number, body: string): string | null {
 }
 
 interface LeadBody {
+  /** 'contact' for the general contact form; anything else is an audit request. */
+  kind?: unknown;
   email?: unknown;
   website?: unknown;
   note?: unknown;
@@ -136,6 +147,7 @@ export async function onRequestPost({
     return json({ ok: true, forwarded: false });
   }
 
+  const kind: Lead['kind'] = body.kind === 'contact' ? 'contact' : 'audit';
   const email = clean(body.email, 254);
   const website = clean(body.website, 300);
   const note = clean(body.note, 1_000);
@@ -147,11 +159,21 @@ export async function onRequestPost({
     );
   }
 
+  if (kind === 'contact' && !note) {
+    return json(
+      { ok: false, error: 'invalid-message', message: 'Enter a message.' },
+      400,
+    );
+  }
+
   const lead: Lead = {
+    kind,
     email,
     website,
     note,
-    page: 'https://www.aigeokit.com/geo-audit/',
+    page: kind === 'contact'
+      ? 'https://www.aigeokit.com/contact/'
+      : 'https://www.aigeokit.com/geo-audit/',
     referer: clean(request.headers.get('referer'), 300),
     received_at: new Date().toISOString(),
   };

@@ -27,6 +27,7 @@ const jsonLd = [
     },
     publisher: {
       '@type': 'Organization',
+      '@id': 'https://www.aigeokit.com/#organization',
       name: 'AIGEOKit',
       url: SITE_URL,
     },
@@ -34,13 +35,20 @@ const jsonLd = [
   {
     '@context': 'https://schema.org',
     '@type': 'Organization',
+    '@id': 'https://www.aigeokit.com/#organization',
     name: 'AIGEOKit',
     url: SITE_URL,
     logo: {
       '@type': 'ImageObject',
-      url: 'https://www.aigeokit.com/og-image.png',
+      // Square 180x180 icon — a social share image is not a logo.
+      url: 'https://www.aigeokit.com/apple-touch-icon.png',
     },
     description,
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer support',
+      url: 'https://www.aigeokit.com/contact/',
+    },
   },
 ];
 ---
@@ -135,7 +143,7 @@ const jsonLd = [
               <li aria-hidden="true" class="text-sand-600">·</li>
               <li class="rounded-full border border-ink-600 bg-ink-900 px-3 py-1 text-[11px] font-medium text-sand-300">Live Preview</li>
               <li aria-hidden="true" class="text-sand-600">·</li>
-              <li class="rounded-full border border-ink-600 bg-ink-900 px-3 py-1 text-[11px] font-medium text-sand-300">100% Client-Side</li>
+              <li class="rounded-full border border-ink-600 bg-ink-900 px-3 py-1 text-[11px] font-medium text-sand-300">Client-side generation</li>
             </ul>
           </div>
           <a
@@ -158,9 +166,8 @@ const jsonLd = [
               AI Visibility Checker
             </h2>
             <p class="mt-2 text-sm leading-relaxed text-sand-400">
-              Evaluate how discoverable your brand is across ChatGPT, Gemini, Perplexity and AI
-              search engines — and see the four signal groups that decide whether AI answers can
-              mention you.
+              Check the public signals that decide whether ChatGPT, Gemini, Perplexity and AI
+              search engines can discover, understand and cite your site.
             </p>
           </div>
           <span

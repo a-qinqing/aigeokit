@@ -492,7 +492,7 @@ function loadExample(): void {
   state.summary =
     'AIGEOKit is a free, privacy-first toolbox of AI & GEO webmaster tools — JSON-LD schema generation, AI crawler checks and llms.txt files — for ranking and getting cited in AI search engines like SearchGPT, Perplexity and Claude.';
   state.details =
-    '## What you can do here\nGenerate JSON-LD schema, test AI crawler access and build an llms.txt file — every tool runs in your browser and costs nothing.';
+    '## What you can do here\nGenerate JSON-LD schema, test AI crawler access and build an llms.txt file — most tools run in your browser and cost nothing.';
   state.llmsFull = '';
   state.pages = [
     {
