@@ -903,17 +903,17 @@ function accessChecks(
   const searchBots = botCheck(
     'ai-search-bots',
     'AI search crawlers',
-    ['OAI-SearchBot', 'PerplexityBot', 'Bingbot'],
+    ['OAI-SearchBot', 'PerplexityBot', 'Claude-SearchBot', 'Bingbot'],
     rows,
-    'Explicitly allow OAI-SearchBot, PerplexityBot and Bingbot in robots.txt — these crawlers feed answer engines.',
+    'Explicitly allow OAI-SearchBot, PerplexityBot, Claude-SearchBot and Bingbot in robots.txt — these crawlers feed answer engines.',
   );
 
   const otherBots = botCheck(
     'ai-training-bots',
     'Training & live-fetch crawlers',
-    ['GPTBot', 'ClaudeBot', 'Google-Extended', 'ChatGPT-User', 'Claude-Web'],
+    ['GPTBot', 'ClaudeBot', 'Google-Extended', 'ChatGPT-User', 'Claude-User'],
     rows,
-    'Decide per crawler and declare it explicitly: GPTBot/ClaudeBot/Google-Extended for training, ChatGPT-User/Claude-Web for live fetches.',
+    'Decide per crawler and declare it explicitly: GPTBot/ClaudeBot/Google-Extended for training, ChatGPT-User/Claude-User for live fetches.',
   );
 
   const llmsText = input.llmsText;

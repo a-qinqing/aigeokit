@@ -7,7 +7,13 @@ import Footer from '../../components/Footer.astro';
 const PAGE_URL = 'https://www.aigeokit.com/blog/';
 const title = 'GEO & AI Search Guides | AIGEOKit';
 const description =
-  'Practical guides to llms.txt, AI crawler access and AI search visibility — written and tested by the person who builds the AIGEOKit tools.';
+  'Practical guides to llms.txt, AI crawler access and AI search visibility, written and tested by the person who builds the AIGEOKit tools.';
+
+const CLUSTER_LABEL: Record<string, string> = {
+  'llms-txt': 'llms.txt',
+  'ai-crawlers': 'AI crawlers',
+  'ai-visibility': 'AI visibility',
+};
 
 const posts = (await getCollection('blog')).sort(
   (a, b) => b.data.publishedDate.valueOf() - a.data.publishedDate.valueOf(),
@@ -60,7 +66,7 @@ const jsonLd = {
             >
               <div class="flex flex-wrap items-center gap-3 text-[11px] uppercase tracking-widest text-sand-500">
                 <span class="rounded-full border border-mint-500/30 bg-mint-500/10 px-2.5 py-1 font-bold text-mint-300">
-                  {post.data.cluster}
+                  {CLUSTER_LABEL[post.data.cluster] ?? post.data.cluster}
                 </span>
                 <time datetime={post.data.publishedDate.toISOString()}>{fmt.format(post.data.publishedDate)}</time>
                 <span aria-hidden="true">·</span>

@@ -17,7 +17,7 @@ const TOOLS = [
   {
     title: 'AI Robots.txt & Crawler Access Checker',
     href: '/tools/ai-robots-txt-checker/',
-    desc: 'Parses a public robots.txt and reports how 9 monitored AI crawlers are treated, with a weighted 0–100 AI Crawlability score. URL mode uses our first-party proxy; paste mode stays local.',
+    desc: 'Parses a public robots.txt and reports how 11 monitored AI crawlers are treated, with a weighted 0–100 AI Crawlability score. URL mode uses our first-party proxy; paste mode stays local.',
   },
   {
     title: 'llms.txt Generator & Validator',
@@ -37,7 +37,7 @@ const TOOLS = [
 ];
 
 const LIMITATIONS = [
-  'The robots.txt checker covers a fixed list of 9 crawlers. Crawlers outside that list are not evaluated.',
+  'The robots.txt checker covers a fixed list of 11 crawlers. Crawlers outside that list are not evaluated.',
   'A robots.txt score describes the rules a site publishes, not whether every crawler actually obeys them or how often it visits.',
   'llms.txt is an emerging convention. Support varies between AI products, and a valid file is not a guarantee of inclusion.',
   'Schema generation produces syntactically valid JSON-LD, but it cannot guarantee rich results or AI citations. Validate output with the search engine tools you rely on.',
@@ -184,7 +184,7 @@ const LIMITATIONS = [
             <h3 class="text-sm font-bold text-sand-100">robots.txt analysis</h3>
             <p class="mt-2 text-[13px] leading-relaxed text-sand-400">
               The checker parses the rules a site publishes, resolves wildcard user-agent groups,
-              and evaluates each of the 9 monitored crawlers as explicitly allowed, blocked, or
+              and evaluates each of the 11 monitored crawlers as explicitly allowed, blocked, or
               allowed only by default. The 0–100 score weights AI search crawlers highest, then
               user-triggered fetchers, then training crawlers; a fully explicit allow scores 100,
               while an unmentioned crawler counts as half.

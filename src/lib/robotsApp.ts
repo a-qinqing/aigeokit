@@ -343,7 +343,7 @@ function scoreCardHtml(report: Report, meta: ReportMeta): string {
             AI Crawlability Score
           </p>
           <p class="mt-1 text-xs leading-relaxed text-sand-500">
-            GEO-weighted crawlability of the 9 monitored crawlers — citation/search crawlers
+            GEO-weighted crawlability of the 11 monitored crawlers — citation/search crawlers
             weigh more than training crawlers.
           </p>
         </div>
@@ -371,9 +371,11 @@ const PTS_BLOCKED: Record<BotStatusRow['category'], number> = {
 const PRODUCT_OF: Record<string, string> = {
   'oai-searchbot': 'SearchGPT & ChatGPT search',
   perplexitybot: 'Perplexity answers',
+  'claude-searchbot': 'Claude search results',
   bingbot: 'Bing AI / Copilot',
   'chatgpt-user': 'live ChatGPT browsing',
-  'claude-web': 'live Claude browsing',
+  'claude-user': 'live Claude browsing',
+  'perplexity-user': 'live Perplexity fetches',
   gptbot: 'OpenAI training',
   claudebot: 'Claude training',
   'google-extended': 'Google AI features',
@@ -510,7 +512,7 @@ const POLICY_DEFS: { key: keyof Policy; label: string; hint: string }[] = [
   {
     key: 'allowSearch',
     label: 'Allow all AI Search & Citation crawlers',
-    hint: 'OAI-SearchBot · PerplexityBot · Bingbot',
+    hint: 'OAI-SearchBot · PerplexityBot · Claude-SearchBot · Bingbot',
   },
   {
     key: 'blockTraining',
@@ -520,7 +522,7 @@ const POLICY_DEFS: { key: keyof Policy; label: string; hint: string }[] = [
   {
     key: 'allowUser',
     label: 'Allow User-Triggered browsing',
-    hint: 'ChatGPT-User · Claude-Web',
+    hint: 'ChatGPT-User · Claude-User · Perplexity-User',
   },
 ];
 

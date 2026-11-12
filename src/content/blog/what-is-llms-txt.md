@@ -86,7 +86,7 @@ All three sit at the root and all three are written for machines, so they get mi
 | **Curated** | Yes, by a human | No, rules only | No, usually exhaustive |
 | **Affects Google rankings** | No | Indirectly, through crawl access | No, though it speeds discovery |
 
-The practical consequence is that these files depend on each other. A well-written llms.txt does nothing if robots.txt tells `GPTBot` and `OAI-SearchBot` to stay out, because the file can't be fetched either. If you have never looked at your crawler rules, do that before writing anything. The [AI Robots.txt Checker](/tools/ai-robots-txt-checker/) reports how nine AI crawlers are treated and scores the result out of 100.
+The practical consequence is that these files depend on each other. A well-written llms.txt does nothing if robots.txt tells `GPTBot` and `OAI-SearchBot` to stay out, because the file can't be fetched either. If you have never looked at your crawler rules, do that before writing anything. The [AI Robots.txt Checker](/tools/ai-robots-txt-checker/) reports how eleven AI crawlers are treated and scores the result out of 100.
 
 ## llms-full.txt, briefly
 

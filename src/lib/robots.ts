@@ -38,7 +38,7 @@ export const CATEGORY_LABELS: Record<BotCategory, string> = {
 
 export const CATEGORY_BLURBS: Record<BotCategory, string> = {
   'ai-search':
-    'Crawlers behind search and answer products — SearchGPT, Perplexity, Bing AI — whose answers cite your pages (direct GEO referral traffic).',
+    'Crawlers behind search and answer products — SearchGPT, Perplexity, Claude, Bing AI — whose answers cite your pages (direct GEO referral traffic).',
   training:
     'Crawlers that read the public web to train models and build knowledge bases.',
   'user-triggered':
@@ -86,9 +86,19 @@ export const AI_BOTS: AiBot[] = [
     name: 'PerplexityBot',
     vendor: 'Perplexity',
     category: 'ai-search',
-    tokens: ['perplexitybot', 'perplexity-user'],
-    blurb: 'Fetches pages for Perplexity answers and API-backed products.',
+    tokens: ['perplexitybot'],
+    blurb: 'Indexes pages so Perplexity can surface and link them in answers.',
     geoImpact: 'Perplexity cites what it crawls — an explicit Allow wins you coverage in answers.',
+  },
+  {
+    id: 'claude-searchbot',
+    name: 'Claude-SearchBot',
+    vendor: 'Anthropic',
+    category: 'ai-search',
+    tokens: ['claude-searchbot'],
+    blurb: "Indexes pages to improve the relevance of Claude's search results.",
+    geoImpact:
+      "Blocking it removes pages from Claude's search index — citations drop even though ClaudeBot may still read you.",
   },
   {
     id: 'bingbot',
@@ -149,13 +159,23 @@ export const AI_BOTS: AiBot[] = [
     geoImpact: 'Live ChatGPT browsing cannot surface pages that block ChatGPT-User.',
   },
   {
-    id: 'claude-web',
-    name: 'Claude-Web',
+    id: 'claude-user',
+    name: 'Claude-User',
     vendor: 'Anthropic',
     category: 'user-triggered',
-    tokens: ['claude-web', 'anthropic-ai'],
-    blurb: 'Fetch layer for user-initiated actions in the Claude web and mobile apps.',
-    geoImpact: 'Pages stay unreachable from live Claude sessions while Claude-Web is blocked.',
+    tokens: ['claude-user'],
+    blurb: 'Fetches a page when a Claude user asks a question that needs live content.',
+    geoImpact: 'Pages stay unreachable from live Claude sessions while Claude-User is blocked.',
+  },
+  {
+    id: 'perplexity-user',
+    name: 'Perplexity-User',
+    vendor: 'Perplexity',
+    category: 'user-triggered',
+    tokens: ['perplexity-user'],
+    blurb: 'Fetches a page at the moment a Perplexity user asks about it.',
+    geoImpact:
+      'Perplexity documents this fetcher as generally ignoring robots.txt, so a Disallow here states intent but does not enforce it.',
   },
 ];
 
@@ -238,7 +258,7 @@ function formatRuleLine(
 }
 
 /**
- * Analyse a robots.txt document against the 9 monitored AI crawlers.
+ * Analyse a robots.txt document against the 11 monitored AI crawlers.
  * Produces the API / UI contract: score, bots_status, summary.
  */
 export function analyzeRobotsTxt(text: string): Analysis {
