@@ -62,6 +62,20 @@ const LIMITATIONS = [
   },
   {
     '@context': 'https://schema.org',
+    '@type': 'Person',
+    '@id': 'https://www.aigeokit.com/about/#founder',
+    name: 'Lifang',
+    jobTitle: 'Founder & Developer',
+    url: PAGE_URL,
+    description: 'Founder and developer of AIGEOKit, a free GEO toolkit.',
+    sameAs: ['https://x.com/jinseyuhe'],
+    worksFor: {
+      '@type': 'Organization',
+      '@id': 'https://www.aigeokit.com/#organization',
+    },
+  },
+  {
+    '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.aigeokit.com/' },
@@ -237,6 +251,36 @@ const LIMITATIONS = [
               </li>
             ))}
           </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== Who maintains this ===================== -->
+    <section id="who-maintains-aigeokit" class="mx-auto max-w-7xl scroll-mt-20 px-4 pb-16 sm:px-6 lg:px-8">
+      <div class="rounded-3xl border border-ink-700 bg-ink-850 p-8 sm:p-10">
+        <h2 class="text-2xl font-bold tracking-tight text-sand-100">Who maintains AIGEOKit?</h2>
+        <div class="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start">
+          <span class="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-mint-500/15 text-lg font-bold text-mint-300 ring-1 ring-mint-500/30">
+            L
+          </span>
+          <div>
+            <p class="text-sm font-semibold text-sand-200">
+              Lifang — founder &amp; developer
+              <a
+                href="https://x.com/jinseyuhe"
+                class="ml-1 text-xs font-medium text-mint-400 underline decoration-mint-500/40 underline-offset-2 hover:text-mint-300"
+                rel="me noopener"
+              >
+                @jinseyuhe
+              </a>
+            </p>
+            <p class="mt-2 max-w-2xl text-sm leading-relaxed text-sand-400">
+              AIGEOKit is built and maintained by one person. Every scoring rule, crawler definition
+              and limitation listed on this page was written and is reviewed by hand — the same person
+              who answers the feedback mail. If a score looks wrong, you are one email away from a
+              human, not a ticket queue.
+            </p>
+          </div>
         </div>
       </div>
     </section>

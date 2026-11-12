@@ -6,7 +6,7 @@ import SEOGuide from '../components/SEOGuide.astro';
 import Footer from '../components/Footer.astro';
 
 const SITE_URL = 'https://www.aigeokit.com/';
-const title = 'Free AI & GEO Tools | Optimize Your Site for SearchGPT & Perplexity';
+const title = 'Free GEO & AI SEO Tools — Get Cited by AI Search | AIGEOKit';
 const description =
   '100% free AI & GEO toolkit for webmasters. Generate JSON-LD schema, boost citations, and get recommended by SearchGPT, Perplexity & AI Overviews.';
 
@@ -44,11 +44,19 @@ const jsonLd = [
       url: 'https://www.aigeokit.com/apple-touch-icon.png',
     },
     description,
+    foundingDate: '2026',
+    founder: {
+      '@type': 'Person',
+      '@id': 'https://www.aigeokit.com/about/#founder',
+    },
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer support',
       url: 'https://www.aigeokit.com/contact/',
     },
+    sameAs: [
+      'https://x.com/jinseyuhe',
+    ],
   },
 ];
 ---
