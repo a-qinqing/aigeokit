@@ -15,6 +15,9 @@ Allow: /
 User-agent: PerplexityBot
 Allow: /
 
+User-agent: Claude-SearchBot
+Allow: /
+
 User-agent: Bingbot
 Allow: /
 
@@ -22,10 +25,15 @@ Allow: /
 User-agent: ChatGPT-User
 Allow: /
 
-User-agent: Claude-Web
+User-agent: Claude-User
+Allow: /
+
+User-agent: Perplexity-User
 Allow: /
 
 # --- Model training crawlers (this site opts in) ---
+# Claude-Web and anthropic-ai are retired tokens; Anthropic's current set is
+# ClaudeBot (training), Claude-SearchBot (search) and Claude-User (live fetch).
 User-agent: GPTBot
 Allow: /
 
