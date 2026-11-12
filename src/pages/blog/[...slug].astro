@@ -1,0 +1,288 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+/* Same-cluster posts, newest first — the only internal linking a new site has. */
+const related = (await getCollection('blog'))
+  .filter((p) => p.id !== post.id && p.data.cluster === post.data.cluster)
+  .sort((a, b) => b.data.publishedDate.valueOf() - a.data.publishedDate.valueOf())
+  .slice(0, 2);
+
+const { title, description, publishedDate, updatedDate, author, faq, relatedTool } = post.data;
+const PAGE_URL = `https://www.aigeokit.com/blog/${post.id}/`;
+
+/* Keep <title> under ~60 chars: only append the brand when it still fits. */
+const BRAND = ' | AIGEOKit';
+const pageTitle = title.length + BRAND.length <= 62 ? title + BRAND : title;
+
+/* Reading time from the raw markdown body (200 wpm). */
+const words = (post.body ?? '').trim().split(/\s+/).length;
+const minutes = Math.max(1, Math.round(words / 200));
+
+const fmt = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+const AUTHOR_ID = 'https://www.aigeokit.com/about/#founder';
+
+const TOOL_LABEL: Record<string, string> = {
+  '/tools/llm-txt-builder/': 'Open the llms.txt Generator & Validator',
+  '/tools/ai-robots-txt-checker/': 'Check your AI crawler access',
+  '/tools/schema-generator/': 'Open the JSON-LD Schema Generator',
+  '/ai-visibility-checker/': 'Run the AI Visibility Checker',
+};
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: title,
+    description,
+    url: PAGE_URL,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': PAGE_URL },
+    datePublished: publishedDate.toISOString(),
+    dateModified: (updatedDate ?? publishedDate).toISOString(),
+    wordCount: words,
+    inLanguage: 'en',
+    author: { '@type': 'Person', '@id': AUTHOR_ID, name: author },
+    publisher: { '@id': 'https://www.aigeokit.com/#organization' },
+    isPartOf: { '@type': 'Blog', '@id': 'https://www.aigeokit.com/blog/' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.aigeokit.com/' },
+      { '@type': 'ListItem', position: 2, name: 'Guides', item: 'https://www.aigeokit.com/blog/' },
+      { '@type': 'ListItem', position: 3, name: title, item: PAGE_URL },
+    ],
+  },
+  ...(faq.length
+    ? [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: faq.map((item) => ({
+            '@type': 'Question',
+            name: item.q,
+            acceptedAnswer: { '@type': 'Answer', text: item.a },
+          })),
+        },
+      ]
+    : []),
+];
+---
+
+<Layout title={pageTitle} description={description} canonical={PAGE_URL} jsonLd={jsonLd}>
+  <Header />
+
+  <main class="mx-auto max-w-3xl px-4 py-14 sm:px-6 lg:px-8">
+    <nav aria-label="Breadcrumb" class="text-xs text-sand-500">
+      <a href="/" class="transition-colors hover:text-mint-400">Home</a>
+      <span class="px-2 text-ink-500">/</span>
+      <a href="/blog/" class="transition-colors hover:text-mint-400">Guides</a>
+    </nav>
+
+    <article>
+      <header class="mt-5 border-b border-ink-700 pb-8">
+        <h1 class="text-3xl font-extrabold leading-tight tracking-tight text-sand-100 sm:text-4xl">
+          {title}
+        </h1>
+        <p class="mt-4 text-base leading-relaxed text-sand-400">{description}</p>
+        <div class="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-sand-500">
+          <a href="/about/#who-maintains-aigeokit" class="font-semibold text-sand-300 transition-colors hover:text-mint-400">
+            {author}
+          </a>
+          <span aria-hidden="true">·</span>
+          <time datetime={publishedDate.toISOString()}>{fmt.format(publishedDate)}</time>
+          {updatedDate && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>Updated {fmt.format(updatedDate)}</span>
+            </>
+          )}
+          <span aria-hidden="true">·</span>
+          <span>{minutes} min read</span>
+        </div>
+      </header>
+
+      <div class="article-body mt-8">
+        <Content />
+      </div>
+
+      <!-- Tool CTA: every article points at the tool it supports -->
+      <aside class="mt-12 rounded-2xl border border-mint-500/25 bg-mint-500/5 p-6 sm:p-8">
+        <p class="text-[11px] font-bold uppercase tracking-widest text-mint-400">Do it now, free</p>
+        <p class="mt-2 text-lg font-bold text-sand-100">
+          {TOOL_LABEL[relatedTool] ?? 'Open the tool'}
+        </p>
+        <p class="mt-2 text-sm leading-relaxed text-sand-400">
+          Runs in your browser, no signup, nothing uploaded.
+        </p>
+        <a
+          href={relatedTool}
+          class="mt-5 inline-flex rounded-xl bg-mint-500 px-6 py-3 text-sm font-bold text-ink-950 transition-colors hover:bg-mint-400"
+        >
+          Open tool →
+        </a>
+      </aside>
+
+      {related.length > 0 && (
+        <section class="mt-12">
+          <h2 class="text-lg font-bold tracking-tight text-sand-100">More on this</h2>
+          <ul class="mt-4 space-y-3">
+            {related.map((item) => (
+              <li>
+                <a
+                  href={`/blog/${item.id}/`}
+                  class="group flex flex-col rounded-xl border border-ink-700 bg-ink-850 p-5 transition-colors hover:border-mint-500/40"
+                >
+                  <span class="text-sm font-bold text-sand-100 group-hover:text-mint-200">{item.data.title}</span>
+                  <span class="mt-1 text-xs leading-relaxed text-sand-400">{item.data.description}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {faq.length > 0 && (
+        <section class="mt-12">
+          <h2 class="text-2xl font-bold tracking-tight text-sand-100">Frequently asked questions</h2>
+          <dl class="mt-5 space-y-5">
+            {faq.map((item) => (
+              <div class="rounded-xl border border-ink-700 bg-ink-850 p-5">
+                <dt class="text-sm font-bold text-sand-100">{item.q}</dt>
+                <dd class="mt-2 text-sm leading-relaxed text-sand-400">{item.a}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
+
+      <footer class="mt-12 border-t border-ink-700 pt-6 text-sm text-sand-500">
+        Written by <a href="/about/#who-maintains-aigeokit" class="font-semibold text-sand-300 hover:text-mint-400">{author}</a>,
+        who builds and maintains AIGEOKit.
+        <a href="/contact/" class="text-mint-400 hover:text-mint-300">Corrections welcome →</a>
+      </footer>
+    </article>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  /* Long-form markdown styling — the site has no typography plugin. */
+  .article-body :global(> p:first-child) {
+    font-size: 1.0625rem;
+    color: #c6d2c9;
+    line-height: 1.8;
+  }
+  .article-body :global(p) {
+    margin: 1.15rem 0;
+    color: #9fafa3;
+    font-size: 0.95rem;
+    line-height: 1.85;
+  }
+  .article-body :global(strong) { color: #ecf3ee; font-weight: 700; }
+  .article-body :global(a) {
+    color: #34d399;
+    text-decoration: underline;
+    text-decoration-color: rgba(16, 185, 129, 0.4);
+    text-underline-offset: 3px;
+  }
+  .article-body :global(a:hover) { color: #6ee7b7; }
+  .article-body :global(h2) {
+    margin: 2.75rem 0 0.9rem;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #ecf3ee;
+    padding-left: 0.75rem;
+    border-left: 3px solid #10b981;
+    line-height: 1.35;
+  }
+  .article-body :global(h3) {
+    margin: 2rem 0 0.6rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ecf3ee;
+  }
+  .article-body :global(ul),
+  .article-body :global(ol) {
+    margin: 1.1rem 0;
+    padding-left: 1.35rem;
+    color: #9fafa3;
+    font-size: 0.95rem;
+    line-height: 1.85;
+  }
+  .article-body :global(li) { margin: 0.5rem 0; }
+  .article-body :global(li::marker) { color: #10b981; }
+  .article-body :global(code) {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.85em;
+    background: #121816;
+    border: 1px solid #1b2320;
+    border-radius: 4px;
+    padding: 0.1em 0.4em;
+    color: #6ee7b7;
+  }
+  .article-body :global(pre) {
+    margin: 1.4rem 0;
+    padding: 1.1rem 1.25rem;
+    background: #0e1311;
+    border: 1px solid #1b2320;
+    border-radius: 12px;
+    overflow-x: auto;
+    font-size: 0.82rem;
+    line-height: 1.7;
+  }
+  .article-body :global(pre code) {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #c6d2c9;
+    font-size: inherit;
+  }
+  .article-body :global(blockquote) {
+    margin: 1.4rem 0;
+    padding: 0.25rem 0 0.25rem 1rem;
+    border-left: 3px solid #2a352f;
+    color: #9fafa3;
+    font-style: italic;
+  }
+  .article-body :global(table) {
+    width: 100%;
+    margin: 1.5rem 0;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  .article-body :global(th),
+  .article-body :global(td) {
+    border: 1px solid #1b2320;
+    padding: 0.6rem 0.7rem;
+    text-align: left;
+    vertical-align: top;
+    line-height: 1.6;
+  }
+  .article-body :global(th) {
+    background: #121816;
+    color: #ecf3ee;
+    font-weight: 700;
+    font-size: 0.8rem;
+  }
+  .article-body :global(td) { color: #9fafa3; }
+  .article-body :global(hr) {
+    margin: 2.5rem 0;
+    border: 0;
+    border-top: 1px solid #1b2320;
+  }
+  .article-body :global(em) { color: #7d8d84; }
+</style>

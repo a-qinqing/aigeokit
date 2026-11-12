@@ -39,3 +39,17 @@ pnpm-debug.log*
 /bing代码构建.txt
 /图标统一.txt
 /推广专属链接.txt
+
+# Working notes: prompt files, reports, keyword research — never published
+/*.txt
+/*.xlsx
+/*.csv
+/SEO*.html
+/GSC*.html
+/AIGEOKit关键词体系*.html
+
+# Agent memory and session state
+.workbuddy/
+
+# Local drafts
+/drafts/
